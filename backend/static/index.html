@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>نظام التوصية الذكي</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>نظام توصية المنتجات</h1>
+  <p class="subtitle">باستخدام الخوارزميات الجينية — BIA601</p>
+</header>
+
+<main>
+  <section class="control-panel">
+    <label for="user-select">اختر مستخدماً:</label>
+    <select id="user-select"><option value="">— اختر —</option></select>
+    <button id="recommend-btn" disabled>اعرض التوصيات</button>
+  </section>
+
+  <section id="status" class="status hidden"></section>
+
+  <section id="user-info" class="user-info hidden"></section>
+
+  <section id="results" class="results"></section>
+</main>
+
+<footer>
+  <p>BIA601 · SVU · Spring 2025</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
