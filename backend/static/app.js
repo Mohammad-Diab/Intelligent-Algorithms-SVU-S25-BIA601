@@ -78,12 +78,38 @@
     resultsEl.innerHTML = "";
     recommendBtn.disabled = true;
 
+    const validate = (input, label) => {
+      const v = parseFloat(input.value);
+      const min = parseFloat(input.min);
+      const max = parseFloat(input.max);
+      if (input.value === "" || isNaN(v)) {
+        triggerInvalid(input);
+        input.focus();
+        throw new Error(`الحقل "${label}" فارغ — أدخل رقماً صحيحاً.`);
+      }
+      if (v < min || v > max) {
+        triggerInvalid(input);
+        input.focus();
+        throw new Error(`القيمة "${v}" في حقل "${label}" خارج المجال المسموح (${min} – ${max}). يرجى تصحيحها.`);
+      }
+      input.classList.remove("invalid");
+      return v;
+    };
+
+    let params;
     try {
-      const params = new URLSearchParams({
-        generations: genInput.value || DEFAULTS.generations,
-        pop_size: popInput.value || DEFAULTS.pop_size,
-        mutation_rate: mutInput.value || DEFAULTS.mutation_rate,
+      params = new URLSearchParams({
+        generations: validate(genInput, "عدد الأجيال"),
+        pop_size: validate(popInput, "حجم المجتمع"),
+        mutation_rate: validate(mutInput, "معدل الطفرة"),
       });
+    } catch (err) {
+      setStatus(err.message, "error");
+      recommendBtn.disabled = false;
+      return;
+    }
+
+    try {
       const res = await fetch(`/api/recommend/${userId}?${params}`);
       if (!res.ok) throw new Error("فشل توليد التوصيات");
       const data = await res.json();
@@ -99,19 +125,56 @@
     }
   }
 
+  const triggerInvalid = (el) => {
+    el.classList.remove("invalid");
+    void el.offsetWidth;
+    el.classList.add("invalid");
+  };
+
   recommendBtn.addEventListener("click", () => {
     const id = parseInt(userSelect.value, 10);
-    if (id) fetchRecommendations(id);
+    if (!id) {
+      triggerInvalid(userSelect);
+      userSelect.focus();
+      setStatus("يرجى اختيار مستخدم أولاً.", "error");
+      return;
+    }
+    userSelect.classList.remove("invalid");
+    fetchRecommendations(id);
   });
 
   userSelect.addEventListener("change", () => {
     recommendBtn.disabled = !userSelect.value;
+    userSelect.classList.remove("invalid");
+    if (userSelect.value) setStatus(null);
   });
 
-  resetBtn.addEventListener("click", () => {
+  const resetAdvanced = () => {
     genInput.value = DEFAULTS.generations;
     popInput.value = DEFAULTS.pop_size;
     mutInput.value = DEFAULTS.mutation_rate;
+    [genInput, popInput, mutInput].forEach(i => i.classList.remove("invalid"));
+  };
+
+  resetBtn.addEventListener("click", () => {
+    resetAdvanced();
+    setStatus(null);
+  });
+
+  const advancedDetails = document.querySelector("details.advanced");
+  advancedDetails.addEventListener("toggle", () => {
+    if (!advancedDetails.open) resetAdvanced();
+  });
+
+  [genInput, popInput, mutInput].forEach(input => {
+    input.addEventListener("input", () => input.classList.remove("invalid"));
+    input.addEventListener("keydown", (e) => {
+      if (["e", "E", "+"].includes(e.key)) e.preventDefault();
+    });
+    input.addEventListener("paste", (e) => {
+      const text = (e.clipboardData || window.clipboardData).getData("text");
+      if (/[eE+]/.test(text)) e.preventDefault();
+    });
   });
 
   loadUsers();

@@ -60,12 +60,14 @@ def get_recommendations(user_id, params, limit=10):
 
 
 def parse_params():
-    def clamp(v, lo, hi):
-        return max(lo, min(hi, v))
+    def check(name, v, lo, hi):
+        if v < lo or v > hi:
+            abort(400, description=f"{name}={v} out of range [{lo}, {hi}]")
+        return v
     try:
-        pop = clamp(int(request.args.get("pop_size", DEFAULTS["pop_size"])), 20, 300)
-        gens = clamp(int(request.args.get("generations", DEFAULTS["generations"])), 10, 500)
-        mut = clamp(float(request.args.get("mutation_rate", DEFAULTS["mutation_rate"])), 0.0, 0.5)
+        pop = check("pop_size", int(request.args.get("pop_size", DEFAULTS["pop_size"])), 20, 300)
+        gens = check("generations", int(request.args.get("generations", DEFAULTS["generations"])), 10, 500)
+        mut = check("mutation_rate", float(request.args.get("mutation_rate", DEFAULTS["mutation_rate"])), 0.0, 0.5)
     except (TypeError, ValueError):
         abort(400, description="invalid parameters")
     return {"pop_size": pop, "generations": gens, "mutation_rate": mut}
