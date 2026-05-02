@@ -73,7 +73,8 @@ def list_users():
 def list_products():
     df = DATA["products"]
     return jsonify([
-        {"product_id": int(r.product_id), "category": str(r.category),
+        {"product_id": int(r.product_id),
+         "category": str(r.category),
          "price": float(r.price)}
         for r in df.itertuples(index=False)
     ])

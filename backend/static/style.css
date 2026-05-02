@@ -52,7 +52,7 @@ body {
 }
 
 .cover-logo {
-  width: 110px;
+  width: 170px;
   height: auto;
   filter: drop-shadow(0 0 12px rgba(94,179,247,0.15));
 }
@@ -60,23 +60,23 @@ body {
 .cover-meta { text-align: start; }
 
 .cover-uni-name {
-  font-size: 1.05rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--text);
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.25rem;
 }
 
 .cover-faculty {
-  font-size: 0.9rem;
+  font-size: 1.15rem;
   color: var(--muted);
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.75rem;
 }
 
 .cover-semester,
 .cover-course {
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   color: #c9a84c;
-  margin-bottom: 0.1rem;
+  margin-bottom: 0.2rem;
 }
 
 .cover-center {
@@ -96,18 +96,8 @@ body {
 .cover-topic {
   font-size: 2.2rem;
   font-weight: 800;
-  background: linear-gradient(90deg, #00c9d4 0%, #5eb3f7 50%, #c9a84c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.8rem;
-}
-
-.cover-divider {
-  width: 60px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #c9a84c, transparent);
-  margin: 0 auto 1rem;
+  color: var(--text);
+  margin-bottom: 1rem;
 }
 
 .cover-teacher-inline {
@@ -128,7 +118,6 @@ body {
 .cover-name { color: var(--text); font-weight: 600; }
 
 .cover-bottom {
-  border-top: 1px dashed var(--border);
   padding-top: 1.25rem;
   text-align: center;
 }
@@ -299,11 +288,15 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   font-size: 0.85rem;
 }
 
-.card .pid {
-  text-align: end;
-  color: var(--muted);
-  font-size: 0.85rem;
-  margin-bottom: 0.5rem;
+.card .name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 0.6rem;
+  padding-inline-start: 2.5rem;
+  min-height: 2em;
+  display: flex;
+  align-items: center;
 }
 
 .card .category {

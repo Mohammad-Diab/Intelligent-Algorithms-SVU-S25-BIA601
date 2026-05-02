@@ -28,7 +28,7 @@
       users.forEach(u => {
         const opt = document.createElement("option");
         opt.value = u.user_id;
-        opt.textContent = `مستخدم ${u.user_id} — ${u.country} — ${u.age} سنة`;
+        opt.textContent = `مستخدم #${u.user_id}`;
         userSelect.appendChild(opt);
       });
       setStatus(null);
@@ -55,7 +55,7 @@
       card.className = "card";
       card.innerHTML = `
         <div class="rank">${i + 1}</div>
-        <div class="pid">#${p.product_id}</div>
+        <div class="name">عنصر #${p.product_id}</div>
         <div class="category">${p.category}</div>
         <div class="price">${p.price.toFixed(2)}</div>
         <div class="score">
