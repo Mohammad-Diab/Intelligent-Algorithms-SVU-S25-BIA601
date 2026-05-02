@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+desktop.ini
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Data backups / temp
+*.tmp
+*.bak
+~$*.xlsx
+
+# Node (if frontend added later)
+node_modules/
+dist/
+build/
+
+# Env files
+.env
+.env.local
+
+# Docs — ignore all PDFs, Word docs, and .md files except README.md
+*.pdf
+*.docx
+*.md
+!README.md
+
+# Misc
+Intelligent Algorithms
+*.txt
+
