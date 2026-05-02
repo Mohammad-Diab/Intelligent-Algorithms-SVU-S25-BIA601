@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory, abort
+from flask import Flask, jsonify, send_from_directory, abort, request
 from pathlib import Path
 
 from data_loader import load_all
@@ -16,10 +16,14 @@ print(f"Loaded {len(DATA['users'])} users, {len(DATA['products'])} products, "
 
 CACHE = {}
 
+DEFAULTS = {"pop_size": 80, "generations": 120, "mutation_rate": 0.05}
 
-def get_recommendations(user_id, limit=10):
-    if user_id in CACHE:
-        return CACHE[user_id]
+
+def get_recommendations(user_id, params, limit=10):
+    cache_key = (user_id, params["pop_size"], params["generations"],
+                 round(params["mutation_rate"], 4))
+    if cache_key in CACHE:
+        return CACHE[cache_key]
 
     result = run_ga(
         user_id=user_id,
@@ -28,8 +32,9 @@ def get_recommendations(user_id, limit=10):
         product_categories=DATA["product_categories"],
         user_purchased=DATA["user_purchased"],
         chromosome_length=limit,
-        pop_size=80,
-        generations=120,
+        pop_size=params["pop_size"],
+        generations=params["generations"],
+        mutation_rate=params["mutation_rate"],
         seed=user_id,
     )
 
@@ -46,11 +51,24 @@ def get_recommendations(user_id, limit=10):
     payload = {
         "user_id": user_id,
         "fitness": round(result["fitness"], 3),
+        "params": params,
         "history": result["history"],
         "recommendations": products,
     }
-    CACHE[user_id] = payload
+    CACHE[cache_key] = payload
     return payload
+
+
+def parse_params():
+    def clamp(v, lo, hi):
+        return max(lo, min(hi, v))
+    try:
+        pop = clamp(int(request.args.get("pop_size", DEFAULTS["pop_size"])), 20, 300)
+        gens = clamp(int(request.args.get("generations", DEFAULTS["generations"])), 10, 500)
+        mut = clamp(float(request.args.get("mutation_rate", DEFAULTS["mutation_rate"])), 0.0, 0.5)
+    except (TypeError, ValueError):
+        abort(400, description="invalid parameters")
+    return {"pop_size": pop, "generations": gens, "mutation_rate": mut}
 
 
 @app.route("/api/health")
@@ -84,7 +102,12 @@ def list_products():
 def recommend(user_id):
     if user_id not in set(DATA["users"]["user_id"].astype(int)):
         abort(404, description=f"user_id {user_id} not found")
-    return jsonify(get_recommendations(user_id))
+    return jsonify(get_recommendations(user_id, parse_params()))
+
+
+@app.route("/api/defaults")
+def defaults():
+    return jsonify(DEFAULTS)
 
 
 @app.route("/")

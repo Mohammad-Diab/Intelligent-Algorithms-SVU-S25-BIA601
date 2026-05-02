@@ -46,6 +46,25 @@
     <button id="recommend-btn" disabled>اعرض التوصيات</button>
   </section>
 
+  <details class="advanced">
+    <summary>إعدادات الخوارزمية المتقدمة</summary>
+    <div class="advanced-grid">
+      <label>عدد الأجيال
+        <input id="gen-input" type="number" min="10" max="500" step="10" value="120">
+        <small>كم جيلاً تتطور الخوارزمية</small>
+      </label>
+      <label>حجم المجتمع
+        <input id="pop-input" type="number" min="20" max="300" step="10" value="80">
+        <small>عدد الحلول المرشحة في كل جيل</small>
+      </label>
+      <label>معدل الطفرة
+        <input id="mut-input" type="number" min="0" max="0.5" step="0.01" value="0.05">
+        <small>احتمال تغيير عشوائي بسيط</small>
+      </label>
+      <button id="reset-btn" type="button" class="btn-ghost">استعادة الافتراضيات</button>
+    </div>
+  </details>
+
   <section id="status" class="status hidden"></section>
   <section id="user-info" class="user-info hidden"></section>
   <section id="results" class="results"></section>

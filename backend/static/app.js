@@ -4,8 +4,13 @@
   const statusEl = document.getElementById("status");
   const userInfoEl = document.getElementById("user-info");
   const resultsEl = document.getElementById("results");
+  const genInput = document.getElementById("gen-input");
+  const popInput = document.getElementById("pop-input");
+  const mutInput = document.getElementById("mut-input");
+  const resetBtn = document.getElementById("reset-btn");
 
   let users = [];
+  const DEFAULTS = { generations: 120, pop_size: 80, mutation_rate: 0.05 };
 
   function setStatus(msg, type = "info") {
     if (!msg) {
@@ -74,7 +79,12 @@
     recommendBtn.disabled = true;
 
     try {
-      const res = await fetch(`/api/recommend/${userId}`);
+      const params = new URLSearchParams({
+        generations: genInput.value || DEFAULTS.generations,
+        pop_size: popInput.value || DEFAULTS.pop_size,
+        mutation_rate: mutInput.value || DEFAULTS.mutation_rate,
+      });
+      const res = await fetch(`/api/recommend/${userId}?${params}`);
       if (!res.ok) throw new Error("فشل توليد التوصيات");
       const data = await res.json();
       const user = users.find(u => u.user_id === data.user_id);
@@ -96,6 +106,12 @@
 
   userSelect.addEventListener("change", () => {
     recommendBtn.disabled = !userSelect.value;
+  });
+
+  resetBtn.addEventListener("click", () => {
+    genInput.value = DEFAULTS.generations;
+    popInput.value = DEFAULTS.pop_size;
+    mutInput.value = DEFAULTS.mutation_rate;
   });
 
   loadUsers();

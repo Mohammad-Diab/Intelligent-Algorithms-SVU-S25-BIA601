@@ -209,6 +209,69 @@ button {
 button:hover:not(:disabled) { background: var(--accent-hover); }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 
+.advanced {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.advanced summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--accent);
+  user-select: none;
+  padding: 0.4rem 0;
+}
+
+.advanced summary:hover { color: var(--accent-hover); }
+
+.advanced[open] summary { margin-bottom: 1rem; }
+
+.advanced-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.advanced-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.advanced-grid input {
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.55rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.advanced-grid small {
+  font-size: 0.75rem;
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--border);
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-ghost:hover { background: var(--surface-2); }
+
 .status {
   background: var(--surface);
   border: 1px solid var(--border);
