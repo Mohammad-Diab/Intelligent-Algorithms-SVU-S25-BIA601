@@ -54,6 +54,12 @@ python app.py
 
 Then open `http://localhost:5000` in a browser.
 
+## Live Demo
+
+https://bia601-recommender.onrender.com
+
+> Hosted on Render free tier — first request after idle may take ~30s to wake up.
+
 ## Scientific Reference
 
 Customer behavioural content recommendation system using decision tree and genetic algorithm for online shopping websites (2024).
