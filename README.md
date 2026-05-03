@@ -59,11 +59,11 @@ To run the standalone GA sandbox instead, see [test_algo/README.md](test_algo/RE
 
 ## Live Demo
 
-- **Full store (DT + GA hybrid, SQLite):** https://bia601-recommender.onrender.com
-- **Standalone GA sandbox (Excel-backed prototype):** https://bia601-ga-sandbox.onrender.com
+- **Hosted store:** https://bia601-recommender.onrender.com
+- **GA-only sandbox:** same site, `/sandbox` route (also reachable from the topbar link "النموذج التجريبي")
 - **3-minute demo video:** _[paste link after recording]_
 
-> Both services are hosted on Render free tier — first request after idle may take ~30s to wake up. The "GA Sandbox" link is also accessible from the navigation bar inside the main store.
+> Hosted on Render free tier — first request after idle may take ~30s to wake up.
 
 ## Scientific Reference
 

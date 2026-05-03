@@ -1,5 +1,5 @@
 services:
-  # New full store with DT + GA hybrid recommender (SQLite)
+  # Single deployment: full store + DT/GA hybrid recommender + GA sandbox at /sandbox
   - type: web
     name: bia601-recommender
     runtime: python
@@ -12,15 +12,3 @@ services:
         value: 3.11.9
       - key: SECRET_KEY
         generateValue: true
-
-  # Original standalone GA sandbox (Excel-backed) — kept live for reference / comparison
-  - type: web
-    name: bia601-ga-sandbox
-    runtime: python
-    plan: free
-    rootDir: test_algo
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.9

@@ -37,8 +37,9 @@ a:hover { color: var(--accent-hover); }
 .brand { color: var(--text); font-weight: 800; font-size: 1.1rem; }
 .brand-sub { color: var(--muted); font-size: 0.75rem; font-weight: 400; margin-inline-start: 0.5rem; }
 .topbar nav { display: flex; gap: 1.25rem; align-items: center; }
-.topbar nav a { color: var(--muted); font-size: 0.95rem; }
+.topbar nav a { color: var(--muted); font-size: 0.95rem; padding: 0.3rem 0.55rem; border-radius: 6px; transition: color 0.15s, background 0.15s; }
 .topbar nav a:hover { color: var(--accent); }
+.topbar nav a.active { color: var(--accent); background: rgba(94,179,247,0.12); border: 1px solid rgba(94,179,247,0.3); }
 .topbar nav .greet { color: var(--text); font-size: 0.9rem; }
 
 /* layout */

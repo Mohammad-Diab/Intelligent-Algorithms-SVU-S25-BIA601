@@ -10,6 +10,7 @@ import products
 import reviews
 import cart
 import recommender
+import sandbox
 
 
 def _ensure_seeded(app):
@@ -36,6 +37,7 @@ def create_app():
     app.register_blueprint(products.bp)
     app.register_blueprint(reviews.bp)
     app.register_blueprint(cart.bp)
+    app.register_blueprint(sandbox.bp)
     app.before_request(auth.load_logged_in_user)
     app.before_request(auth.require_login_globally)
 

@@ -1,3 +1,4 @@
+import time
 from collections import defaultdict, Counter
 
 import numpy as np
@@ -12,6 +13,9 @@ W_RATING = 0.40
 W_VIEWED = 0.20
 W_CLICKED = 0.25
 W_PURCHASED = 0.15
+
+CACHE_TTL = 30
+_cache = {}
 
 
 def _load_snapshot():
@@ -160,6 +164,12 @@ def predict_preferred_category(user_id, product_categories,
 
 
 def recommend(user_id, top_n=10, ga_seed=None):
+    key = (user_id, top_n, ga_seed)
+    now = time.time()
+    hit = _cache.get(key)
+    if hit and now - hit[0] < CACHE_TTL:
+        return hit[1]
+
     product_index, product_categories, rating_rows, behavior_rows = _load_snapshot()
     score_matrix = _build_score_matrix(rating_rows, behavior_rows)
     user_purchased = _build_user_purchased(behavior_rows)
@@ -189,8 +199,10 @@ def recommend(user_id, top_n=10, ga_seed=None):
             "price": p["price"], "image_url": p["image_url"],
             "score": score_matrix.get((user_id, pid), 0.0),
         })
-    return {
+    payload = {
         "preferred_category": preferred,
         "fitness": result["fitness"],
         "products": out,
     }
+    _cache[key] = (now, payload)
+    return payload

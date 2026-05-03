@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}النموذج التجريبي · الخوارزمية الجينية{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='sandbox/style.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>النموذج التجريبي للخوارزمية الجينية</h1>
+  <p>تشغيل الخوارزمية الجينية وحدها (بدون شجرة القرار) على نفس بيانات المتجر.</p>
+</section>
+
+<section class="control-panel">
+  <label for="user-select">اختر مستخدماً:</label>
+  <select id="user-select"><option value="">— اختر —</option></select>
+</section>
+
+<details class="advanced">
+  <summary>إعدادات الخوارزمية المتقدمة</summary>
+  <div class="advanced-grid">
+    <label>
+      <span class="label-text">عدد الأجيال</span>
+      <input id="gen-input" type="number" min="10" max="500" step="10" value="120" required>
+      <small>10 – 500 · كم جيلاً تتطور الخوارزمية</small>
+    </label>
+    <label>
+      <span class="label-text">حجم المجتمع</span>
+      <input id="pop-input" type="number" min="20" max="300" step="10" value="80" required>
+      <small>20 – 300 · عدد الحلول المرشحة في كل جيل</small>
+    </label>
+    <label>
+      <span class="label-text">معدل الطفرة</span>
+      <input id="mut-input" type="number" min="0" max="0.5" step="0.01" value="0.05" required>
+      <small>0 – 0.5 · احتمال تغيير عشوائي بسيط</small>
+    </label>
+    <button id="reset-btn" type="button" class="icon-btn" title="استعادة القيم الافتراضية" aria-label="استعادة القيم الافتراضية">↺</button>
+  </div>
+</details>
+
+<section class="action-row">
+  <button id="recommend-btn" disabled>اعرض التوصيات</button>
+</section>
+
+<section id="status" class="status hidden"></section>
+<section id="user-info" class="user-info hidden"></section>
+<section id="results" class="results"></section>
+
+<script src="{{ url_for('static', filename='sandbox/app.js') }}"></script>
+{% endblock %}

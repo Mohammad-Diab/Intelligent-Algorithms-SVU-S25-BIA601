@@ -4,17 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}متجر لاختبار نظام توصية المنتجات بالخوارزميات الجينية{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% block extra_css %}{% endblock %}
 </head>
 <body>
   <header class="topbar">
     <a href="{{ url_for('home') }}" class="brand">متجر لاختبار نظام توصية المنتجات بالخوارزميات الجينية</a>
+    {% set ep = request.endpoint or '' %}
     <nav>
+      <a href="{{ url_for('home') }}" class="{{ 'active' if ep == 'home' else '' }}">الرئيسية</a>
       {% if g.user %}
-        <a href="{{ url_for('products.list_products') }}">المنتجات</a>
-        <a href="{{ url_for('cart.view_cart') }}">العربة</a>
+        <a href="{{ url_for('products.list_products') }}" class="{{ 'active' if ep.startswith('products.') else '' }}">المنتجات</a>
+        <a href="{{ url_for('cart.view_cart') }}" class="{{ 'active' if ep.startswith('cart.') else '' }}">العربة</a>
       {% endif %}
-      <a href="https://bia601-ga-sandbox.onrender.com" title="النموذج التجريبي للخوارزمية الجينية">النموذج التجريبي</a>
+      <a href="{{ url_for('sandbox.index') }}" class="{{ 'active' if ep.startswith('sandbox.') else '' }}" title="النموذج التجريبي للخوارزمية الجينية">النموذج التجريبي</a>
       {% if g.user %}
         <span class="greet">مرحباً، {{ g.user['full_name'] }}</span>
         <a href="{{ url_for('auth.logout') }}">تسجيل الخروج</a>
