@@ -41,6 +41,103 @@ def create_app():
     app.before_request(auth.load_logged_in_user)
     app.before_request(auth.require_login_globally)
 
+    @app.context_processor
+    def inject_cart_count():
+        if g.get("user"):
+            row = db.get_db().execute(
+                "SELECT COALESCE(SUM(qty), 0) FROM cart_items WHERE user_id = ?",
+                (g.user["user_id"],),
+            ).fetchone()
+            return {"cart_count": int(row[0] or 0)}
+        return {"cart_count": 0}
+
+    @app.route("/dashboard")
+    @auth.login_required
+    def dashboard():
+        d = db.get_db()
+        stats = {
+            "revenue": d.execute(
+                "SELECT COALESCE(SUM(p.price), 0) FROM products p "
+                "JOIN behavior b ON b.product_id=p.product_id WHERE b.event='purchased'"
+            ).fetchone()[0],
+            "active_users": d.execute(
+                "SELECT COUNT(DISTINCT user_id) FROM behavior"
+            ).fetchone()[0],
+            "top_category": (d.execute(
+                "SELECT p.category FROM products p "
+                "JOIN behavior b ON b.product_id=p.product_id AND b.event='purchased' "
+                "GROUP BY p.category ORDER BY COUNT(*) DESC LIMIT 1"
+            ).fetchone() or [None])[0] or "—",
+            "clicks": d.execute("SELECT COUNT(*) FROM behavior WHERE event='clicked'").fetchone()[0],
+            "purchases": d.execute("SELECT COUNT(*) FROM behavior WHERE event='purchased'").fetchone()[0],
+        }
+        stats["conversion"] = round(stats["purchases"] / stats["clicks"] * 100, 2) if stats["clicks"] else 0
+        # Run GA briefly to get a fitness history for the chart
+        try:
+            r = recommender.recommend(g.user["user_id"], top_n=10, ga_seed=42)
+        except Exception:
+            r = None
+        return render_template("dashboard.html", stats=stats, recs=r,
+                               ga_pop=60, ga_gens=40, ga_mutation=0.05)
+
+    @app.route("/analytics")
+    @auth.login_required
+    def analytics():
+        d = db.get_db()
+        views = d.execute("SELECT COUNT(*) FROM behavior WHERE event='viewed'").fetchone()[0]
+        clicks = d.execute("SELECT COUNT(*) FROM behavior WHERE event='clicked'").fetchone()[0]
+        purchases = d.execute("SELECT COUNT(*) FROM behavior WHERE event='purchased'").fetchone()[0]
+        ctr = round(clicks / views * 100, 2) if views else 0
+        conv = round(purchases / clicks * 100, 2) if clicks else 0
+        # Real avg order value if any orders exist
+        aov_row = d.execute("SELECT AVG(total) FROM orders").fetchone()
+        aov = float(aov_row[0]) if aov_row[0] else 0.0
+        # Real category distribution (purchased counts)
+        cat_rows = d.execute(
+            "SELECT p.category, COUNT(*) AS n FROM products p "
+            "JOIN behavior b ON b.product_id=p.product_id AND b.event='purchased' "
+            "GROUP BY p.category ORDER BY n DESC"
+        ).fetchall()
+        return render_template("analytics.html",
+                               views=views, clicks=clicks, purchases=purchases,
+                               ctr=ctr, conv=conv, aov=aov,
+                               categories=[(r["category"], r["n"]) for r in cat_rows])
+
+    @app.route("/profile")
+    @auth.login_required
+    def profile():
+        from collections import defaultdict
+        recs = recommender.recommend(g.user["user_id"], top_n=6, ga_seed=42)
+        # Real interest analysis: weighted per-category from user's ratings + behavior
+        rows = db.get_db().execute(
+            "SELECT p.category, "
+            "       COALESCE(SUM(CASE WHEN b.event='clicked'   THEN 1 ELSE 0 END), 0) AS clicks, "
+            "       COALESCE(SUM(CASE WHEN b.event='purchased' THEN 1 ELSE 0 END), 0) AS purchases, "
+            "       COALESCE((SELECT SUM(rating) FROM ratings r "
+            "                 JOIN products p2 ON p2.product_id=r.product_id "
+            "                 WHERE r.user_id=? AND p2.category=p.category), 0) AS rating_sum "
+            "FROM products p "
+            "LEFT JOIN behavior b ON b.product_id=p.product_id AND b.user_id=? "
+            "GROUP BY p.category",
+            (g.user["user_id"], g.user["user_id"]),
+        ).fetchall()
+        scores = {r["category"]: float(r["rating_sum"] or 0) * 1.0
+                  + float(r["clicks"] or 0) * 0.5
+                  + float(r["purchases"] or 0) * 2.0
+                  for r in rows}
+        total = sum(scores.values()) or 1
+        interests = sorted(
+            ((cat, round(score / total * 100, 1)) for cat, score in scores.items()),
+            key=lambda x: x[1], reverse=True
+        )
+        # Match score: scale fitness — chromosome length 6 with possible bonuses ≈ 1-2 per item
+        match_score = min(99, max(20, round(recs["fitness"] / 6 * 50)))
+        return render_template(
+            "profile.html",
+            recs=recs, interests=interests, match_score=match_score,
+            ga_pop=60, ga_gens=40, ga_mutation=0.05,
+        )
+
     @app.route("/")
     def home():
         recs = None

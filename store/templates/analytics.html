@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block title %}التحليلات{% endblock %}
+{% block content %}
+
+<section class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4" data-aos="fade-down">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-800">التحليلات والرؤى</h1>
+    <p class="text-gray-500 mt-1 text-sm">تحليل عميق لسلوك المستخدمين وأداء التوصيات.</p>
+  </div>
+  <span class="glass-button px-4 py-2 text-xs font-bold text-gray-600">آخر تحديث: مباشر</span>
+</section>
+
+<!-- Behavior totals -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+  <div class="glass-card p-5">
+    <p class="text-xs font-bold text-gray-500 uppercase mb-2">إجمالي المشاهدات</p>
+    <p class="text-3xl font-extrabold text-gray-800 font-en">{{ '{:,}'.format(views) }}</p>
+    <p class="text-[11px] text-green-500 mt-1 font-semibold">بيانات حقيقية</p>
+  </div>
+  <div class="glass-card p-5">
+    <p class="text-xs font-bold text-gray-500 uppercase mb-2">إجمالي النقرات</p>
+    <p class="text-3xl font-extrabold text-gray-800 font-en">{{ '{:,}'.format(clicks) }}</p>
+    <p class="text-[11px] text-green-500 mt-1 font-semibold">بيانات حقيقية</p>
+  </div>
+  <div class="glass-card p-5">
+    <p class="text-xs font-bold text-gray-500 uppercase mb-2">إجمالي المشتريات</p>
+    <p class="text-3xl font-extrabold text-gray-800 font-en">{{ '{:,}'.format(purchases) }}</p>
+    <p class="text-[11px] text-green-500 mt-1 font-semibold">بيانات حقيقية</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+  <!-- Click vs Purchase weekly (DUMMY — no time-series in seed) -->
+  <div class="glass-card p-6" data-aos="fade-up">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-bold text-gray-800 flex items-center gap-2"><i class="fas fa-mouse-pointer text-purple-500"></i> النقرات مقابل المشتريات (أسبوعياً)</h3>
+      <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">بيانات تجريبية</span>
+    </div>
+    <p class="text-[11px] text-yellow-700 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 mb-3">
+      ⚠️ البيانات المعطاة لا تحتوي على طوابع زمنية يومية — التوزيع الأسبوعي معروض كنموذج توضيحي فقط.
+    </p>
+    <div style="position:relative;height:280px"><canvas id="weekly-chart"></canvas></div>
+  </div>
+
+  <!-- Category radar (REAL) -->
+  <div class="glass-card p-6" data-aos="fade-up">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-bold text-gray-800 flex items-center gap-2"><i class="fas fa-chart-area text-pink-500"></i> اهتمام الفئات</h3>
+      <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-green-100 text-green-700">بيانات حقيقية</span>
+    </div>
+    <div style="position:relative;height:280px"><canvas id="radar-chart"></canvas></div>
+  </div>
+</div>
+
+<!-- AI Performance -->
+<div class="glass-card p-6" data-aos="fade-up">
+  <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-brain text-purple-500"></i> أداء توصيات الذكاء الاصطناعي</h3>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="text-center bg-white/40 rounded-2xl p-5 border border-white/60">
+      <p class="text-xs font-bold text-gray-500 uppercase mb-2">معدل النقر (CTR)</p>
+      <p class="text-3xl font-extrabold text-purple-600 font-en">{{ ctr }}%</p>
+      <p class="text-[11px] text-green-500 mt-2 font-semibold">بيانات حقيقية</p>
+    </div>
+    <div class="text-center bg-white/40 rounded-2xl p-5 border border-white/60">
+      <p class="text-xs font-bold text-gray-500 uppercase mb-2">معدل التحويل</p>
+      <p class="text-3xl font-extrabold text-pink-600 font-en">{{ conv }}%</p>
+      <p class="text-[11px] text-green-500 mt-2 font-semibold">بيانات حقيقية</p>
+    </div>
+    <div class="text-center bg-white/40 rounded-2xl p-5 border border-white/60">
+      <p class="text-xs font-bold text-gray-500 uppercase mb-2">متوسط قيمة الطلب</p>
+      <p class="text-3xl font-extrabold text-gray-800 font-en">{% if aov %}{{ '{:,.0f}'.format(aov) }} ل.س{% else %}—{% endif %}</p>
+      <p class="text-[11px] mt-2 font-semibold {% if aov %}text-green-500{% else %}text-yellow-700{% endif %}">
+        {% if aov %}بيانات حقيقية{% else %}لا توجد طلبات بعد{% endif %}
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function(){
+  if (!window.Chart) return;
+
+  // Weekly bar — DUMMY shape illustrative only
+  new Chart(document.getElementById('weekly-chart'), {
+    type: 'bar',
+    data: {
+      labels: ['الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'],
+      datasets: [
+        { label: 'نقرات', data: [1200, 1900, 1500, 2200, 2800, 3500, 3100], backgroundColor: 'rgba(168,85,247,0.7)', borderRadius: 6 },
+        { label: 'مشتريات', data: [120, 180, 140, 200, 250, 320, 290],     backgroundColor: 'rgba(236,72,153,0.7)', borderRadius: 6 },
+      ]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // Radar — REAL category counts from server
+  const cats = {{ categories|tojson }};
+  new Chart(document.getElementById('radar-chart'), {
+    type: 'radar',
+    data: {
+      labels: cats.map(c => c[0]),
+      datasets: [{
+        label: 'مشتريات',
+        data: cats.map(c => c[1]),
+        backgroundColor: 'rgba(168,85,247,0.2)',
+        borderColor: '#a855f7',
+        pointBackgroundColor: '#a855f7',
+        pointBorderColor: '#fff',
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+  });
+})();
+</script>
+
+{% endblock %}

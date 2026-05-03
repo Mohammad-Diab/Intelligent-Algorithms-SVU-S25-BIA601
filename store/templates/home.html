@@ -48,8 +48,8 @@
     {% endfor %}
   </div>
   {% if not g.user %}
-  <div class="mt-6">
-    <a href="{{ url_for('auth.login') }}" class="btn-brand text-base px-8 py-3">سجّل الدخول لرؤية توصياتك</a>
+  <div class="mt-8 flex justify-center">
+    <a href="{{ url_for('auth.login') }}" class="btn-brand text-base px-10 py-3">سجّل الدخول لرؤية توصياتك</a>
   </div>
   {% endif %}
 </section>

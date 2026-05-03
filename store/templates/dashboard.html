@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}لوحة المعلومات{% endblock %}
+{% block content %}
+
+<section class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4" data-aos="fade-down">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-800">لوحة المعلومات</h1>
+    <p class="text-gray-500 mt-1 text-sm">نظرة عامة على أداء المتجر بناءً على بيانات السلوك الحقيقية.</p>
+  </div>
+  <a href="{{ url_for('analytics') }}" class="glass-button px-5 py-2 text-sm text-purple-600 font-bold inline-flex items-center gap-2">
+    تحليلات تفصيلية <i class="fas fa-arrow-left text-xs"></i>
+  </a>
+</section>
+
+<!-- Real KPIs -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+  <div class="glass-card p-5" data-aos="fade-up" data-aos-delay="0">
+    <div class="flex items-start justify-between mb-2">
+      <p class="text-xs font-bold text-gray-500 uppercase">إجمالي الإيرادات</p>
+      <div class="w-9 h-9 rounded-xl bg-green-100 text-green-600 flex items-center justify-center"><i class="fas fa-dollar-sign"></i></div>
+    </div>
+    <p class="text-2xl font-extrabold text-gray-800 font-en">{{ '{:,.0f}'.format(stats.revenue) }} ل.س</p>
+    <p class="text-[11px] text-green-500 mt-1 font-semibold flex items-center gap-1"><i class="fas fa-arrow-up text-[9px]"></i> بيانات حقيقية</p>
+  </div>
+  <div class="glass-card p-5" data-aos="fade-up" data-aos-delay="50">
+    <div class="flex items-start justify-between mb-2">
+      <p class="text-xs font-bold text-gray-500 uppercase">المستخدمون النشطون</p>
+      <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center"><i class="fas fa-users"></i></div>
+    </div>
+    <p class="text-2xl font-extrabold text-gray-800 font-en">{{ stats.active_users }}</p>
+    <p class="text-[11px] text-green-500 mt-1 font-semibold flex items-center gap-1"><i class="fas fa-arrow-up text-[9px]"></i> بيانات حقيقية</p>
+  </div>
+  <div class="glass-card p-5" data-aos="fade-up" data-aos-delay="100">
+    <div class="flex items-start justify-between mb-2">
+      <p class="text-xs font-bold text-gray-500 uppercase">الفئة الأعلى</p>
+      <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center"><i class="fas fa-tags"></i></div>
+    </div>
+    <p class="text-xl font-extrabold text-gray-800">{{ stats.top_category }}</p>
+    <p class="text-[11px] text-green-500 mt-1 font-semibold flex items-center gap-1"><i class="fas fa-arrow-up text-[9px]"></i> بيانات حقيقية</p>
+  </div>
+  <div class="glass-card p-5" data-aos="fade-up" data-aos-delay="150">
+    <div class="flex items-start justify-between mb-2">
+      <p class="text-xs font-bold text-gray-500 uppercase">معدل التحويل</p>
+      <div class="w-9 h-9 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center"><i class="fas fa-shopping-cart"></i></div>
+    </div>
+    <p class="text-2xl font-extrabold text-gray-800 font-en">{{ stats.conversion }}%</p>
+    <p class="text-[11px] text-green-500 mt-1 font-semibold flex items-center gap-1"><i class="fas fa-arrow-up text-[9px]"></i> بيانات حقيقية</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+  <!-- GA Fitness Evolution -->
+  <div class="glass-card p-6" data-aos="fade-up">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-bold text-gray-800">تطور لياقة الخوارزمية الجينية</h3>
+      <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-green-100 text-green-700">بيانات حقيقية</span>
+    </div>
+    <div style="position:relative;height:260px"><canvas id="fitness-chart"></canvas></div>
+  </div>
+
+  <!-- GA Status donut -->
+  <div class="glass-card p-6" data-aos="fade-up">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-bold text-gray-800">حالة الخوارزمية</h3>
+      <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-green-100 text-green-700">بيانات حقيقية</span>
+    </div>
+    <div class="grid grid-cols-2 gap-4 items-center">
+      <div class="flex items-center justify-center">
+        <canvas id="mutation-donut" width="180" height="180"></canvas>
+      </div>
+      <div class="space-y-3 text-sm">
+        <div class="flex justify-between"><span class="text-gray-600">حجم المجتمع</span><strong class="text-purple-600 font-en">{{ ga_pop }}</strong></div>
+        <div class="flex justify-between"><span class="text-gray-600">عدد الأجيال</span><strong class="text-purple-600 font-en">{{ ga_gens }}</strong></div>
+        <div class="flex justify-between"><span class="text-gray-600">الطفرة</span><strong class="text-blue-500 font-en">{{ '%.3f'|format(ga_mutation) }}</strong></div>
+        <div class="flex justify-between"><span class="text-gray-600">اللياقة</span><strong class="text-green-500 font-en">{{ '%.2f'|format(recs.fitness) if recs else '—' }}</strong></div>
+        <div class="flex justify-between"><span class="text-gray-600">النخبوية</span><strong class="text-purple-600">مفعّلة ✓</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent AI Insights -->
+<div class="glass-card p-6" data-aos="fade-up">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="font-bold text-gray-800">رؤى الذكاء الاصطناعي</h3>
+    <span class="text-[10px] font-bold px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">نص ثابت</span>
+  </div>
+  <ul class="text-sm text-gray-700 space-y-2 leading-relaxed">
+    <li><i class="fas fa-circle text-[6px] text-purple-400 ml-2"></i> شجرة القرار تحلّل سلوك المستخدمين وتُصنّفهم حسب الفئة المفضّلة.</li>
+    <li><i class="fas fa-circle text-[6px] text-purple-400 ml-2"></i> الخوارزمية الجينية تتطوّر عبر {{ ga_gens }} جيل وتختار أفضل قائمة بطول 10 منتجات.</li>
+    <li><i class="fas fa-circle text-[6px] text-purple-400 ml-2"></i> النخبوية تحفظ أفضل 5% من المجتمع بين الأجيال.</li>
+    <li><i class="fas fa-circle text-[6px] text-purple-400 ml-2"></i> يتم تحديث التوصيات تلقائياً كل 30 ثانية بعد كل تفاعل.</li>
+  </ul>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function(){
+  const history = {{ recs.history|tojson if recs and recs.history else '[]' }};
+  const labels = history.map((_, i) => i + 1);
+  const fitData = history.map(h => h.best);
+  const avgData = history.map(h => h.avg);
+
+  if (window.Chart) {
+    new Chart(document.getElementById('fitness-chart'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'أفضل لياقة', data: fitData, borderColor: '#a855f7', backgroundColor: 'rgba(168,85,247,0.15)', fill: true, tension: 0.3 },
+          { label: 'متوسط اللياقة', data: avgData, borderColor: '#ec4899', backgroundColor: 'rgba(236,72,153,0.10)', fill: true, tension: 0.3 },
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    const mutVal = {{ ga_mutation }};
+    new Chart(document.getElementById('mutation-donut'), {
+      type: 'doughnut',
+      data: {
+        labels: ['طفرة', 'مستقر'],
+        datasets: [{ data: [mutVal * 100, 100 - mutVal * 100], backgroundColor: ['#a855f7', '#fce7f3'], borderWidth: 0 }]
+      },
+      options: { cutout: '70%', plugins: { legend: { display: false } } }
+    });
+  }
+})();
+</script>
+
+{% endblock %}

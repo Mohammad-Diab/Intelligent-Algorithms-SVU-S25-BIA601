@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}الملف الذكي{% endblock %}
+{% block content %}
+
+<!-- Header card -->
+<section class="glass-card p-6 md:p-8 mb-8 flex flex-col md:flex-row items-center justify-between gap-6" data-aos="fade-down">
+  <div>
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-3">
+      <span class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white shadow-lg">
+        <i class="fas fa-magic"></i>
+      </span>
+      الملف الذكي
+    </h1>
+    <p class="text-gray-500 mt-2 max-w-lg">مدعوم بـ <strong>شجرة القرار + الخوارزمية الجينية</strong> — التوصيات تتطور مع نشاطك.</p>
+  </div>
+  <div class="flex gap-3">
+    <div class="text-center p-4 bg-white/50 rounded-2xl border border-white/60 min-w-[100px]">
+      <p class="text-xs font-bold text-gray-400 uppercase">نسبة التطابق</p>
+      <p class="text-2xl font-bold text-purple-600">{{ match_score }}%</p>
+    </div>
+    <div class="text-center p-4 bg-white/50 rounded-2xl border border-white/60 min-w-[100px]">
+      <p class="text-xs font-bold text-gray-400 uppercase">اللياقة</p>
+      <p class="text-2xl font-bold text-pink-500">{{ '%.2f'|format(recs['fitness']) }}</p>
+    </div>
+    <div class="text-center p-4 bg-white/50 rounded-2xl border border-white/60 min-w-[100px]">
+      <p class="text-xs font-bold text-gray-400 uppercase">الطفرة</p>
+      <p class="text-2xl font-bold text-blue-500">{{ '%.3f'|format(ga_mutation) }}</p>
+    </div>
+  </div>
+</section>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+  <!-- Sidebar: Interest Analysis + GA Status -->
+  <aside class="lg:col-span-1 space-y-6" data-aos="fade-right">
+
+    <!-- Interest Analysis -->
+    <div class="glass-card p-6">
+      <h3 class="font-bold text-gray-800 mb-4 text-lg flex items-center gap-2">
+        <i class="fas fa-chart-bar text-purple-500"></i> اهتماماتك حسب الفئة
+      </h3>
+      {% if interests and interests[0][1] > 0 %}
+        {% set bar_colors = ['from-purple-500 to-pink-500', 'from-pink-500 to-rose-400', 'from-blue-500 to-cyan-400', 'from-emerald-500 to-teal-400', 'from-orange-500 to-amber-400', 'from-violet-500 to-purple-400', 'from-fuchsia-500 to-pink-400'] %}
+        <div class="space-y-4">
+          {% for cat, pct in interests %}
+            {% if pct > 0 %}
+            <div>
+              <div class="flex justify-between text-sm mb-1">
+                <span class="text-gray-700 font-bold">{{ cat }}</span>
+                <span class="font-bold text-purple-600">{{ pct }}%</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-gradient-to-r {{ bar_colors[loop.index0 % bar_colors|length] }} h-2 rounded-full" style="width:{{ pct }}%"></div>
+              </div>
+            </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-sm text-gray-400">لا يوجد نشاط بعد. تصفّح بعض المنتجات لبناء ملفك!</p>
+      {% endif %}
+    </div>
+
+    <!-- GA Status -->
+    <div class="glass-card p-6">
+      <h3 class="font-bold text-gray-800 mb-4">🧬 حالة الخوارزمية الجينية</h3>
+      <div class="space-y-3 text-sm">
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">حجم المجتمع</span>
+          <span class="font-bold text-purple-600 font-en">{{ ga_pop }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">عدد الأجيال</span>
+          <span class="font-bold text-purple-600 font-en">{{ ga_gens }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">معدل الطفرة</span>
+          <span class="font-bold text-blue-500 font-en">{{ '%.3f'|format(ga_mutation) }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">قيمة اللياقة</span>
+          <span class="font-bold text-green-500 font-en">{{ '%.2f'|format(recs['fitness']) }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">النخبوية</span>
+          <span class="font-bold text-purple-600">مفعّلة ✓</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-gray-600">شجرة القرار</span>
+          <span class="font-bold text-purple-600">مفعّلة ✓</span>
+        </div>
+        {% if recs['preferred_category'] %}
+        <div class="flex justify-between items-center pt-2 border-t border-gray-200">
+          <span class="text-gray-600">الفئة المتوقعة</span>
+          <span class="font-bold text-pink-600">{{ recs['preferred_category'] }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Why -->
+    <div class="glass-card p-6 bg-gradient-to-br from-purple-50 to-pink-50">
+      <h3 class="font-bold text-gray-800 mb-2">لماذا هذه التوصيات؟</h3>
+      <p class="text-sm text-gray-600 leading-relaxed">
+        تُحلّل <strong>شجرة القرار</strong> سلوكك التاريخي (مشاهدات، نقرات، تقييمات، مشتريات) لتتنبأ بالفئة المفضلة لديك. ثم تستخدم <strong>الخوارزمية الجينية</strong> هذا التنبؤ كتحيز في دالة اللياقة لتنتج أفضل قائمة توصية متنوعة.
+      </p>
+    </div>
+  </aside>
+
+  <!-- Main: Top Matches -->
+  <div class="lg:col-span-2">
+    <div class="flex justify-between items-center mb-5">
+      <h2 class="text-xl font-bold text-gray-800">أفضل التوصيات لك</h2>
+      <span class="text-xs text-gray-500 bg-purple-50 px-3 py-1 rounded-full flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+        نتائج حية
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      {% for p in recs['products'] %}
+        {% set match_pct = (p['score'] * 100)|round(0)|int %}
+        {% set color = 'green' if match_pct >= 70 else 'yellow' if match_pct >= 40 else 'blue' %}
+        <a href="{{ url_for('products.detail', product_id=p['product_id']) }}" class="glass-card product-card p-4 group flex flex-col">
+          <div class="relative rounded-2xl overflow-hidden mb-3 aspect-[4/3] bg-white/40">
+            <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy"
+                 class="w-full h-full object-cover transition duration-500 group-hover:scale-105"
+                 onerror="this.onerror=null;this.src='https://placehold.co/400x300/f3e5f5/6b21a8?text=%23{{ p['product_id'] }}';">
+            <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-xl text-xs font-bold shadow flex items-center gap-2">
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-{{ color }}-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-{{ color }}-500"></span>
+              </span>
+              {{ match_pct }}% تطابق
+            </div>
+          </div>
+          <div class="flex-1">
+            <div class="text-xs text-purple-600 font-bold uppercase mb-1">{{ p['category'] }}</div>
+            <h3 class="font-bold text-gray-800 mb-2 line-clamp-2">{{ p['name'] }}</h3>
+            <div class="flex justify-between items-center mb-3">
+              <span class="font-bold text-gray-900 text-base">{{ '%.2f'|format(p['price']) }} ل.س</span>
+              <span class="text-xs font-bold text-pink-600">Gen {{ p['rank'] }}</span>
+            </div>
+            <div class="p-3 bg-purple-50/70 rounded-xl border border-purple-100">
+              <p class="text-xs text-gray-600 leading-relaxed">
+                <i class="fas fa-robot text-purple-400 ml-1"></i>
+                <strong>لماذا؟</strong>
+                {% if recs['preferred_category'] == p['category'] %}
+                  ينتمي إلى الفئة المتوقعة لك (<em>{{ p['category'] }}</em>) من شجرة القرار.
+                {% else %}
+                  مرشّح من الخوارزمية الجينية بدرجة تطابق {{ match_pct }}% بناءً على سلوكك.
+                {% endif %}
+              </p>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -163,8 +163,8 @@ def predict_preferred_category(user_id, product_categories,
     return clf.predict(feats.reshape(1, -1))[0]
 
 
-def recommend(user_id, top_n=10, ga_seed=None):
-    key = (user_id, top_n, ga_seed)
+def recommend(user_id, top_n=10, ga_seed=None, only_category=None):
+    key = (user_id, top_n, ga_seed, only_category)
     now = time.time()
     hit = _cache.get(key)
     if hit and now - hit[0] < CACHE_TTL:
@@ -177,8 +177,12 @@ def recommend(user_id, top_n=10, ga_seed=None):
     clf, categories, encoder, cached = _train_decision_tree(product_categories)
     preferred = predict_preferred_category(
         user_id, product_categories, clf, categories, encoder, cached)
+    if only_category:
+        preferred = only_category
 
     in_stock = [pid for pid, p in product_index.items() if p["stock"] > 0]
+    if only_category:
+        in_stock = [pid for pid in in_stock if product_categories.get(pid) == only_category]
     pool = in_stock if len(in_stock) >= top_n else list(product_index.keys())
 
     result = ga.run(

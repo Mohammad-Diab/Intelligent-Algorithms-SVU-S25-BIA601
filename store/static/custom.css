@@ -197,6 +197,29 @@ img.loaded {
   100% { background-position: 0% 50%; }
 }
 
+/* Cart chip in topbar */
+.cart-chip {
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 999px;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid rgba(255,255,255,0.85);
+  color: #6b21a8; font-size: 1rem;
+  transition: all 0.15s;
+}
+.cart-chip:hover { background: #fff; color: #581c87; transform: translateY(-1px); }
+.cart-badge {
+  position: absolute; top: -6px; left: -6px;
+  background: linear-gradient(135deg, #ec4899, #f43f5e);
+  color: #fff; font-weight: 800; font-size: 11px;
+  min-width: 22px; height: 22px; padding: 0 6px;
+  border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(244,63,94,0.4);
+  font-family: var(--font-en);
+}
+
 /* Logout chip in topbar */
 .logout-chip {
   display: inline-flex; align-items: center; gap: 6px;

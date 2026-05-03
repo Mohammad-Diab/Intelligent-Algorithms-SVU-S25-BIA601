@@ -1,44 +1,63 @@
 from flask import Blueprint, render_template, request, abort, g
 
 from db import get_db, log_event
+import recommender
 
 
 bp = Blueprint("products", __name__, url_prefix="/products")
 
-PAGE_SIZE = 24
+
+CATEGORY_SLUGS = {
+    "ألعاب": "toys",
+    "أجهزة منزلية": "home-appliances",
+    "إلكترونيات": "electronics",
+    "كتب": "books",
+    "ملابس": "clothes",
+    "رياضة": "sports",
+    "عطور": "perfumes",
+}
+SLUG_TO_CATEGORY = {v: k for k, v in CATEGORY_SLUGS.items()}
 
 
 @bp.route("/")
 def list_products():
     db = get_db()
-    q = request.args.get("q", "").strip()
-    category = request.args.get("category", "").strip()
-    page = max(1, int(request.args.get("page", "1") or 1))
+    slug = request.args.get("category", "").strip()
+    category_ar = SLUG_TO_CATEGORY.get(slug, "")
 
-    where, params = [], []
-    if q:
-        where.append("(name LIKE ? OR description LIKE ?)")
-        params += [f"%{q}%", f"%{q}%"]
-    if category:
-        where.append("category = ?")
-        params.append(category)
-    clause = ("WHERE " + " AND ".join(where)) if where else ""
+    if category_ar:
+        clause, params = "WHERE p.category = ?", [category_ar]
+    else:
+        clause, params = "", []
 
-    total = db.execute(f"SELECT COUNT(*) FROM products {clause}", params).fetchone()[0]
-    offset = (page - 1) * PAGE_SIZE
     products = db.execute(
-        f"SELECT product_id, name, category, price, image_url FROM products "
-        f"{clause} ORDER BY product_id LIMIT ? OFFSET ?",
-        params + [PAGE_SIZE, offset],
+        f"SELECT p.product_id, p.name, p.category, p.price, p.image_url, "
+        f"       COALESCE((SELECT ROUND(AVG(rating),2) FROM ratings r WHERE r.product_id = p.product_id), 0) AS avg_rating "
+        f"FROM products p {clause} ORDER BY p.product_id",
+        params,
     ).fetchall()
+
     categories = [r["category"] for r in db.execute(
         "SELECT DISTINCT category FROM products ORDER BY category").fetchall()]
+    category_pills = [(c, CATEGORY_SLUGS.get(c, c)) for c in categories]
 
-    pages = max(1, (total + PAGE_SIZE - 1) // PAGE_SIZE)
+    overall_max_price = int(db.execute(
+        "SELECT COALESCE(MAX(price), 2000) FROM products").fetchone()[0])
+
+    cat_recs = None
+    if category_ar and request.args.get("recommend") == "1" and g.user:
+        try:
+            cat_recs = recommender.recommend(
+                g.user["user_id"], top_n=6, ga_seed=42, only_category=category_ar)
+        except Exception:
+            cat_recs = None
+
     return render_template(
         "products/list.html",
-        products=products, categories=categories,
-        q=q, category=category, page=page, pages=pages, total=total,
+        products=products, category_pills=category_pills,
+        slug=slug, category_ar=category_ar, total=len(products),
+        overall_max_price=overall_max_price,
+        cat_recs=cat_recs,
     )
 
 

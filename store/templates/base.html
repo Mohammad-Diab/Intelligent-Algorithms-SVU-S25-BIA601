@@ -1,17 +1,19 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}متجر لاختبار نظام توصية المنتجات بالخوارزميات الجينية{% endblock %}</title>
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>tailwind.config={theme:{extend:{colors:{'soft-cyan':'#e0f7fa','light-pink':'#fce4ec','cream':'#fffdd0','light-purple':'#f3e5f5'}}}}</script>
+  <script>tailwind.config = { theme: { extend: { colors: { 'soft-cyan': '#e0f7fa', 'light-pink': '#fce4ec', 'cream': '#fffdd0', 'light-purple': '#f3e5f5' } } } }</script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
   {% block extra_css %}{% endblock %}
 </head>
+
 <body class="antialiased min-h-screen flex flex-col">
 
   {% set ep = request.endpoint or '' %}
@@ -19,37 +21,47 @@
   <!-- Row 1: Topbar (full width) -->
   <header class="sticky top-0 z-30 glass px-6 py-3 flex items-center justify-between gap-4 flex-shrink-0">
     <a href="{{ url_for('home') }}" class="flex items-center gap-3 flex-shrink-0">
-      <div class="w-11 h-11 rounded-full bg-gradient-to-br from-purple-300 to-purple-500 flex items-center justify-center text-white text-xl font-bold shadow-md">H</div>
+      <div
+        class="w-11 h-11 rounded-full bg-gradient-to-br from-purple-300 to-purple-500 flex items-center justify-center text-white text-xl font-bold shadow-md">
+        H</div>
       <span class="font-en font-extrabold text-2xl tracking-tight">
         <span class="text-gray-900">Homs</span><span class="text-purple-600">Store</span>
       </span>
     </a>
     <nav class="flex items-center gap-3 text-sm flex-shrink-0">
       {% if g.user %}
-        <span class="flex items-center gap-2 text-sm text-gray-700">
-          <i class="fas fa-user-circle text-purple-500 text-3xl"></i>
-          <span>مرحباً، <strong class="text-gray-900">{{ g.user['full_name'] }}</strong></span>
-        </span>
-        <a href="{{ url_for('auth.logout') }}" class="logout-chip" title="تسجيل الخروج">
-          <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">خروج</span>
-        </a>
+      <a href="{{ url_for('cart.view_cart') }}" class="cart-chip relative" title="العربة">
+        <i class="fas fa-shopping-cart"></i>
+        {% if cart_count > 0 %}
+          <span class="cart-badge">{{ cart_count }}</span>
+        {% endif %}
+      </a>
+      <span class="flex items-center gap-2 text-sm text-gray-700">
+        <i class="fas fa-user-circle text-purple-500 text-3xl"></i>
+        <span>مرحباً، <strong class="text-gray-900">{{ g.user['full_name'] }}</strong></span>
+      </span>
+      <a href="{{ url_for('auth.logout') }}" class="logout-chip" title="تسجيل الخروج">
+        <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">خروج</span>
+      </a>
       {% else %}
-        <a href="{{ url_for('auth.login') }}" class="bg-gray-900 text-white px-5 py-2 rounded-full font-semibold hover:bg-gray-800 transition shadow-md text-xs">تسجيل الدخول</a>
+      <a href="{{ url_for('auth.login') }}"
+        class="bg-gray-900 text-white px-5 py-2 rounded-full font-semibold hover:bg-gray-800 transition shadow-md text-xs">تسجيل
+        الدخول</a>
       {% endif %}
     </nav>
   </header>
 
   <!-- Flash messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="fixed top-16 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 space-y-2">
-        {% for cat, msg in messages %}
-          <div class="flash-{{ cat }} glass-card px-4 py-3 text-sm font-semibold shadow-lg">
-            {{ msg }}
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
+  {% if messages %}
+  <div class="fixed top-16 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 space-y-2">
+    {% for cat, msg in messages %}
+    <div class="flash-{{ cat }} glass-card px-4 py-3 text-sm font-semibold shadow-lg">
+      {{ msg }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
   {% endwith %}
 
   <!-- Row 2: Sidebar + Main -->
@@ -57,16 +69,17 @@
 
     {% if g.user %}
     {% set sidebar_cats = [
-        ('ألعاب', 'fa-gamepad'),
-        ('أجهزة منزلية', 'fa-blender'),
-        ('إلكترونيات', 'fa-laptop'),
-        ('كتب', 'fa-book'),
-        ('ملابس', 'fa-shirt'),
-        ('رياضة', 'fa-futbol'),
-        ('عطور', 'fa-spray-can-sparkles'),
+    ('ألعاب', 'toys', 'fa-gamepad'),
+    ('أجهزة منزلية', 'home-appliances', 'fa-blender'),
+    ('إلكترونيات', 'electronics', 'fa-laptop'),
+    ('كتب', 'books', 'fa-book'),
+    ('ملابس', 'clothes', 'fa-shirt'),
+    ('رياضة', 'sports', 'fa-futbol'),
+    ('عطور', 'perfumes', 'fa-spray-can-sparkles'),
     ] %}
     {% set current_cat = request.args.get('category') %}
-    <aside class="w-64 flex-shrink-0 glass p-5 flex flex-col gap-4 sticky top-[68px] self-start max-h-[calc(100vh-68px)] overflow-y-auto">
+    <aside
+      class="w-64 flex-shrink-0 glass p-5 flex flex-col gap-4 sticky top-[68px] self-start max-h-[calc(100vh-68px)] overflow-y-auto">
 
       <!-- Section: Discover -->
       <div>
@@ -75,13 +88,24 @@
           <a href="{{ url_for('home') }}" class="side-link {{ 'active' if ep == 'home' else '' }}">
             <span class="side-icon"><i class="fas fa-home"></i></span> الرئيسية
           </a>
-          <a href="{{ url_for('products.list_products') }}" class="side-link {{ 'active' if ep.startswith('products.') and not current_cat else '' }}">
+          <a href="{{ url_for('dashboard') }}" class="side-link {{ 'active' if ep == 'dashboard' else '' }}">
+            <span class="side-icon"><i class="fas fa-gauge-high"></i></span> لوحة المعلومات
+          </a>
+          <a href="{{ url_for('analytics') }}" class="side-link {{ 'active' if ep == 'analytics' else '' }}">
+            <span class="side-icon"><i class="fas fa-chart-line"></i></span> التحليلات
+          </a>
+          <a href="{{ url_for('products.list_products') }}"
+            class="side-link {{ 'active' if ep.startswith('products.') and not current_cat else '' }}">
             <span class="side-icon"><i class="fas fa-compass"></i></span> تصفح الكل
           </a>
           <a href="{{ url_for('cart.view_cart') }}" class="side-link {{ 'active' if ep.startswith('cart.') else '' }}">
             <span class="side-icon"><i class="fas fa-shopping-cart"></i></span> العربة
           </a>
-          <a href="{{ url_for('playground.index') }}" class="side-link {{ 'active' if ep.startswith('playground.') else '' }}">
+          <a href="{{ url_for('profile') }}" class="side-link {{ 'active' if ep == 'profile' else '' }}">
+            <span class="side-icon"><i class="fas fa-magic"></i></span> الملف الذكي
+          </a>
+          <a href="{{ url_for('playground.index') }}"
+            class="side-link {{ 'active' if ep.startswith('playground.') else '' }}">
             <span class="side-icon"><i class="fas fa-flask"></i></span> النموذج التجريبي
           </a>
         </nav>
@@ -91,11 +115,11 @@
       <div>
         <h6 class="side-section-title">الفئات</h6>
         <nav class="flex flex-col gap-1.5 mt-2">
-          {% for cat_name, cat_icon in sidebar_cats %}
-            <a href="{{ url_for('products.list_products', category=cat_name) }}"
-               class="side-link {{ 'active' if current_cat == cat_name else '' }}">
-              <span class="side-icon"><i class="fas {{ cat_icon }}"></i></span> {{ cat_name }}
-            </a>
+          {% for cat_name, cat_slug, cat_icon in sidebar_cats %}
+          <a href="{{ url_for('products.list_products', category=cat_slug) }}"
+            class="side-link {{ 'active' if current_cat == cat_slug else '' }}">
+            <span class="side-icon"><i class="fas {{ cat_icon }}"></i></span> {{ cat_name }}
+          </a>
           {% endfor %}
         </nav>
       </div>
@@ -110,7 +134,7 @@
           <p class="text-xs text-gray-600 mb-4 leading-relaxed">
             خوارزمية جينية ترشّح لك المنتجات الأنسب بناءً على تفاعلك.
           </p>
-          <a href="{{ url_for('home') }}" class="ai-btn">
+          <a href="{{ url_for('profile') }}" class="ai-btn">
             احصل على التوصيات
           </a>
         </div>
@@ -130,7 +154,8 @@
   </div>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  <script>AOS.init({duration:600, once:true, offset:30});</script>
+  <script>AOS.init({ duration: 600, once: true, offset: 30 });</script>
   {% block extra_js %}{% endblock %}
 </body>
+
 </html>
