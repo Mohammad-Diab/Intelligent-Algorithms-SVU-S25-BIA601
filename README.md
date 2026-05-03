@@ -25,29 +25,28 @@ A web application that improves product recommendations in an e-commerce store u
 ## File Structure
 
 ```
-backend/
-  app.py                  — Flask API + GA engine entry point
-  data_loader.py          — loads Excel files, computes composite scores
-  genetic_algorithm.py    — GA: chromosome, fitness, crossover, mutation
+test_algo/                — standalone GA prototype (Excel-backed)
+  app.py
+  data_loader.py
+  genetic_algorithm.py
   requirements.txt
   static/
-    index.html            — single-page UI
-    style.css
-    app.js
-data/
+store/                    — full online store + DT+GA recommender (SQLite) [in progress]
+data/                     — source Excel datasets
   users.xlsx
   products.xlsx
   ratings.xlsx
   behavior_15500.xlsx
+OnlineStore/              — original C# store (reference, being ported to Python)
 plan.md                   — project plan
+tasks.md                  — task checklist
 report.md                 — technical report (Arabic)
-mysol.md                  — final report draft
 ```
 
 ## Usage
 
 ```bash
-cd backend
+cd test_algo
 pip install -r requirements.txt
 python app.py
 ```
