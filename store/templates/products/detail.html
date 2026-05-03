@@ -2,11 +2,12 @@
 {% block title %}{{ product['name'] }}{% endblock %}
 {% block content %}
 <section class="detail">
-  <img class="detail-img" src="{{ product['image_url'] }}" alt="{{ product['name'] }}">
+  <img class="detail-img" src="{{ product['image_url'] }}" alt="{{ product['name'] }}"
+       onerror="this.onerror=null;this.src='https://placehold.co/600x400/1a2028/5eb3f7?text=%23{{ product['product_id'] }}+{{ product['category']|urlencode }}';">
   <div class="detail-info">
     <h1>{{ product['name'] }}</h1>
     <div class="muted">{{ product['category'] }}</div>
-    <div class="detail-price">${{ '%.2f'|format(product['price']) }}</div>
+    <div class="detail-price">{{ '%.2f'|format(product['price']) }} ل.س</div>
     <div class="muted">المتوفر في المخزون: {{ product['stock'] }}</div>
     <div class="rating-summary">
       {% if avg_rating is not none %}
@@ -18,7 +19,7 @@
     <p>{{ product['description'] }}</p>
     {% if product['stock'] > 0 %}
       {% if g.user %}
-        <form method="post" action="{{ url_for('cart.add', product_id=product['id']) }}" class="add-to-cart">
+        <form method="post" action="{{ url_for('cart.add', product_id=product['product_id']) }}" class="add-to-cart">
           <input type="number" name="qty" value="1" min="1" max="{{ product['stock'] }}">
           <button type="submit" class="btn-primary">أضف إلى العربة</button>
         </form>
@@ -36,19 +37,19 @@
 
   {% if g.user %}
     <div class="review-forms">
-      <form method="post" action="{{ url_for('reviews.submit_rating', product_id=product['id']) }}" class="form-inline">
-        <label>تقييمك:
-          <select name="rating" required>
-            <option value="">--</option>
-            {% for n in [1,2,3,4,5] %}
-              <option value="{{ n }}" {% if user_rating == n %}selected{% endif %}>{{ n }} ★</option>
-            {% endfor %}
-          </select>
-        </label>
+      <form method="post" action="{{ url_for('reviews.submit_rating', product_id=product['product_id']) }}" class="form-inline rating-form">
+        <span class="rating-label">تقييمك:</span>
+        <div class="star-rating" role="radiogroup" aria-label="تقييم بالنجوم">
+          {% for n in [1,2,3,4,5] %}
+            <input type="radio" id="star{{ n }}" name="rating" value="{{ n }}"
+                   {% if user_rating == n %}checked{% endif %} required>
+            <label for="star{{ n }}" title="{{ n }} نجوم">★</label>
+          {% endfor %}
+        </div>
         <button type="submit">{{ 'تحديث التقييم' if user_rating else 'إرسال التقييم' }}</button>
       </form>
 
-      <form method="post" action="{{ url_for('reviews.submit_review', product_id=product['id']) }}" class="form-inline">
+      <form method="post" action="{{ url_for('reviews.submit_review', product_id=product['product_id']) }}" class="form-inline">
         <textarea name="comment" placeholder="اكتب مراجعتك..." required maxlength="1000" rows="3"></textarea>
         <button type="submit">نشر المراجعة</button>
       </form>
@@ -61,7 +62,7 @@
     <ul class="review-list">
       {% for r in reviews %}
         <li>
-          <div class="review-head"><strong>{{ r['username'] }}</strong> <span class="muted">{{ r['created_at'] }}</span></div>
+          <div class="review-head"><strong>{{ r['author'] }}</strong> <span class="muted">{{ r['created_at'] }}</span></div>
           <div>{{ r['comment'] }}</div>
         </li>
       {% endfor %}

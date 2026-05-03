@@ -44,7 +44,7 @@ def create_app():
         recs = None
         if g.user:
             try:
-                recs = recommender.recommend(g.user["id"], top_n=8, ga_seed=42)
+                recs = recommender.recommend(g.user["user_id"], top_n=10, ga_seed=42)
             except Exception:
                 recs = None
         return render_template("home.html", recs=recs)

@@ -20,12 +20,13 @@
 {% if products %}
 <div class="grid">
   {% for p in products %}
-    <a class="card" href="{{ url_for('products.detail', product_id=p['id']) }}">
-      <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy">
+    <a class="card" href="{{ url_for('products.detail', product_id=p['product_id']) }}">
+      <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy"
+           onerror="this.onerror=null;this.src='https://placehold.co/400x300/1a2028/5eb3f7?text=%23{{ p['product_id'] }}+{{ p['category']|urlencode }}';">
       <div class="card-body">
         <div class="card-title">{{ p['name'] }}</div>
         <div class="card-meta">{{ p['category'] }}</div>
-        <div class="card-price">${{ '%.2f'|format(p['price']) }}</div>
+        <div class="card-price">{{ '%.2f'|format(p['price']) }} ل.س</div>
       </div>
     </a>
   {% endfor %}
@@ -34,11 +35,11 @@
 {% if pages > 1 %}
 <nav class="pager">
   {% if page > 1 %}
-    <a href="{{ url_for('products.list_products', q=q, category=category, page=page-1) }}">السابق &rarr;</a>
+    <a href="{{ url_for('products.list_products', q=q, category=category, page=page-1) }}">&rarr; السابق</a>
   {% endif %}
   <span class="muted">صفحة {{ page }} / {{ pages }}</span>
   {% if page < pages %}
-    <a href="{{ url_for('products.list_products', q=q, category=category, page=page+1) }}">&larr; التالي</a>
+    <a href="{{ url_for('products.list_products', q=q, category=category, page=page+1) }}">التالي &larr;</a>
   {% endif %}
 </nav>
 {% endif %}

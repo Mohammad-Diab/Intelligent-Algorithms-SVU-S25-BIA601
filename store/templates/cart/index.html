@@ -14,17 +14,17 @@
     {% for r in items %}
       <tr>
         <td><img src="{{ r['image_url'] }}" alt="" class="thumb"></td>
-        <td><a href="{{ url_for('products.detail', product_id=r['id']) }}">{{ r['name'] }}</a></td>
-        <td>${{ '%.2f'|format(r['price']) }}</td>
+        <td><a href="{{ url_for('products.detail', product_id=r['product_id']) }}">{{ r['name'] }}</a></td>
+        <td>{{ '%.2f'|format(r['price']) }} ل.س</td>
         <td>
-          <form method="post" action="{{ url_for('cart.update', product_id=r['id']) }}" class="qty-form">
+          <form method="post" action="{{ url_for('cart.update', product_id=r['product_id']) }}" class="qty-form">
             <input type="number" name="qty" value="{{ r['qty'] }}" min="0" max="{{ r['stock'] }}">
             <button type="submit">تحديث</button>
           </form>
         </td>
-        <td>${{ '%.2f'|format(r['line_total']) }}</td>
+        <td>{{ '%.2f'|format(r['line_total']) }} ل.س</td>
         <td>
-          <form method="post" action="{{ url_for('cart.remove', product_id=r['id']) }}">
+          <form method="post" action="{{ url_for('cart.remove', product_id=r['product_id']) }}">
             <button type="submit" class="link-btn">حذف</button>
           </form>
         </td>
@@ -32,12 +32,12 @@
     {% endfor %}
   </tbody>
   <tfoot>
-    <tr><td colspan="4" class="ar">الإجمالي:</td><td><strong>${{ '%.2f'|format(total) }}</strong></td><td></td></tr>
+    <tr><td colspan="4" class="ar">الإجمالي:</td><td><strong>{{ '%.2f'|format(total) }} ل.س</strong></td><td></td></tr>
   </tfoot>
 </table>
 
 <form method="post" action="{{ url_for('cart.checkout') }}" class="checkout-form">
-  <button type="submit" class="btn-primary">ادفع ${{ '%.2f'|format(total) }}</button>
+  <button type="submit" class="btn-primary">ادفع {{ '%.2f'|format(total) }} ل.س</button>
 </form>
 
 {% else %}

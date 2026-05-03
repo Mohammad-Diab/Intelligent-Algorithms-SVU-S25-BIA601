@@ -27,8 +27,8 @@ def list_products():
     total = db.execute(f"SELECT COUNT(*) FROM products {clause}", params).fetchone()[0]
     offset = (page - 1) * PAGE_SIZE
     products = db.execute(
-        f"SELECT id, name, category, price, image_url FROM products "
-        f"{clause} ORDER BY id LIMIT ? OFFSET ?",
+        f"SELECT product_id, name, category, price, image_url FROM products "
+        f"{clause} ORDER BY product_id LIMIT ? OFFSET ?",
         params + [PAGE_SIZE, offset],
     ).fetchall()
     categories = [r["category"] for r in db.execute(
@@ -46,14 +46,14 @@ def list_products():
 def detail(product_id):
     db = get_db()
     p = db.execute(
-        "SELECT id, name, category, price, image_url, description, stock "
-        "FROM products WHERE id = ?", (product_id,)).fetchone()
+        "SELECT product_id, name, category, price, image_url, description, stock "
+        "FROM products WHERE product_id = ?", (product_id,)).fetchone()
     if p is None:
         abort(404)
 
     if g.user:
-        log_event(g.user["id"], product_id, "viewed")
-        log_event(g.user["id"], product_id, "clicked")
+        log_event(g.user["user_id"], product_id, "viewed")
+        log_event(g.user["user_id"], product_id, "clicked")
 
     rating_row = db.execute(
         "SELECT AVG(rating) AS avg, COUNT(*) AS n FROM ratings WHERE product_id = ?",
@@ -62,8 +62,8 @@ def detail(product_id):
     rating_count = rating_row["n"]
 
     reviews = db.execute(
-        "SELECT r.comment, r.created_at, u.username "
-        "FROM reviews r JOIN users u ON u.id = r.user_id "
+        "SELECT r.comment, r.created_at, u.full_name AS author "
+        "FROM reviews r JOIN users u ON u.user_id = r.user_id "
         "WHERE r.product_id = ? ORDER BY r.created_at DESC LIMIT 50",
         (product_id,)).fetchall()
 
@@ -71,7 +71,7 @@ def detail(product_id):
     if g.user:
         row = db.execute(
             "SELECT rating FROM ratings WHERE user_id = ? AND product_id = ?",
-            (g.user["id"], product_id)).fetchone()
+            (g.user["user_id"], product_id)).fetchone()
         if row:
             user_rating = row["rating"]
 

@@ -8,7 +8,7 @@
 </head>
 <body>
   <header class="topbar">
-    <a href="{{ url_for('home') }}" class="brand">متجر لاختبار نظام التوصية</a>
+    <a href="{{ url_for('home') }}" class="brand">متجر لاختبار نظام توصية المنتجات بالخوارزميات الجينية</a>
     <nav>
       {% if g.user %}
         <a href="{{ url_for('products.list_products') }}">المنتجات</a>
@@ -16,7 +16,7 @@
       {% endif %}
       <a href="https://bia601-ga-sandbox.onrender.com" title="النموذج التجريبي للخوارزمية الجينية">النموذج التجريبي</a>
       {% if g.user %}
-        <span class="greet">مرحباً، {{ g.user['username'] }}</span>
+        <span class="greet">مرحباً، {{ g.user['full_name'] }}</span>
         <a href="{{ url_for('auth.logout') }}">تسجيل الخروج</a>
       {% else %}
         <a href="{{ url_for('auth.login') }}">تسجيل الدخول</a>

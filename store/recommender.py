@@ -17,10 +17,10 @@ W_PURCHASED = 0.15
 def _load_snapshot():
     db = get_db()
     products = db.execute(
-        "SELECT id, name, category, price, image_url, stock FROM products"
+        "SELECT product_id, name, category, price, image_url, stock FROM products"
     ).fetchall()
-    product_categories = {p["id"]: p["category"] for p in products}
-    product_index = {p["id"]: dict(p) for p in products}
+    product_categories = {p["product_id"]: p["category"] for p in products}
+    product_index = {p["product_id"]: dict(p) for p in products}
 
     rating_rows = db.execute(
         "SELECT user_id, product_id, rating FROM ratings").fetchall()
@@ -74,13 +74,13 @@ def _user_features(user_row, behavior_rows, rating_rows, product_categories,
     feats[2] = 0  # placeholder
 
     for r in rating_rows:
-        if r["user_id"] != user_row["id"]:
+        if r["user_id"] != user_row["user_id"]:
             continue
         ci = cat_idx.get(product_categories.get(r["product_id"]))
         if ci is not None:
             feats[3 + ci] += r["rating"]
     for b in behavior_rows:
-        if b["user_id"] != user_row["id"]:
+        if b["user_id"] != user_row["user_id"]:
             continue
         ci = cat_idx.get(product_categories.get(b["product_id"]))
         if ci is None:
@@ -96,7 +96,7 @@ def _user_features(user_row, behavior_rows, rating_rows, product_categories,
 def _train_decision_tree(product_categories):
     db = get_db()
     users = db.execute(
-        "SELECT id, age, location FROM users").fetchall()
+        "SELECT user_id, age, location FROM users").fetchall()
     rating_rows = db.execute(
         "SELECT user_id, product_id, rating FROM ratings").fetchall()
     behavior_rows = db.execute(
@@ -124,7 +124,7 @@ def _train_decision_tree(product_categories):
 
     X, y = [], []
     for u in users:
-        uid = u["id"]
+        uid = u["user_id"]
         if by_user_purchased[uid]:
             label = by_user_purchased[uid].most_common(1)[0][0]
         elif by_user_rated[uid]:
@@ -150,7 +150,7 @@ def predict_preferred_category(user_id, product_categories,
         return Counter(cats).most_common(1)[0][0] if cats else None
     db = get_db()
     user_row = db.execute(
-        "SELECT id, age, location FROM users WHERE id = ?", (user_id,)).fetchone()
+        "SELECT user_id, age, location FROM users WHERE user_id = ?", (user_id,)).fetchone()
     if user_row is None:
         return None
     behavior_rows, rating_rows = cached_rows
@@ -179,12 +179,13 @@ def recommend(user_id, top_n=10, ga_seed=None):
     )
 
     out = []
-    for pid in result["recommendations"]:
+    for rank, pid in enumerate(result["recommendations"], start=1):
         p = product_index.get(pid)
         if not p:
             continue
         out.append({
-            "id": p["id"], "name": p["name"], "category": p["category"],
+            "rank": rank,
+            "product_id": p["product_id"], "name": p["name"], "category": p["category"],
             "price": p["price"], "image_url": p["image_url"],
             "score": score_matrix.get((user_id, pid), 0.0),
         })

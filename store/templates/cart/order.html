@@ -12,12 +12,12 @@
         <tr>
           <td>{{ r['name'] }}</td>
           <td>{{ r['qty'] }}</td>
-          <td>${{ '%.2f'|format(r['price']) }}</td>
-          <td>${{ '%.2f'|format(r['line_total']) }}</td>
+          <td>{{ '%.2f'|format(r['price']) }} ل.س</td>
+          <td>{{ '%.2f'|format(r['line_total']) }} ل.س</td>
         </tr>
       {% endfor %}
     </tbody>
-    <tfoot><tr><td colspan="3" class="ar">الإجمالي:</td><td><strong>${{ '%.2f'|format(order['total']) }}</strong></td></tr></tfoot>
+    <tfoot><tr><td colspan="3" class="ar">الإجمالي:</td><td><strong>{{ '%.2f'|format(order['total']) }} ل.س</strong></td></tr></tfoot>
   </table>
 
   <a href="{{ url_for('products.list_products') }}" class="btn-primary">متابعة التسوق</a>

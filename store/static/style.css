@@ -139,7 +139,10 @@ button {
 }
 button:hover:not(:disabled) { background: var(--accent-hover); }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
-.btn-primary { background: var(--accent); color: #0f1419; padding: 0.7rem 1.4rem; }
+.btn-primary { background: var(--accent); color: #0f1419; padding: 0.7rem 1.4rem; display: inline-block; font-weight: 700; }
+.btn-primary:hover { background: var(--accent-hover); color: #0f1419; }
+.btn-xl { padding: 1rem 2.5rem; font-size: 1.15rem; border-radius: 10px; }
+.home-cta { display: flex; justify-content: center; margin: 1.5rem 0 2rem; }
 .link-btn { background: none; color: var(--danger); padding: 0; font-weight: 600; }
 .link-btn:hover { color: #ff8888; background: none; text-decoration: underline; }
 
@@ -201,7 +204,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .reviews h2 { font-size: 1.15rem; margin-bottom: 0.75rem; }
 .review-forms { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
 .form-inline {
-  display: flex; gap: 0.5rem; align-items: flex-start; flex-wrap: wrap;
+  display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 10px; padding: 0.75rem 0.85rem;
 }
@@ -213,6 +216,29 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 .review-head { font-size: 0.8rem; margin-bottom: 0.3rem; }
 .review-head strong { color: var(--accent); }
+
+/* Star rating (interactive, RTL-aware) */
+.rating-form { align-items: center; }
+.rating-label { color: var(--text); font-size: 0.95rem; }
+.star-rating {
+  display: inline-flex;
+  flex-direction: row-reverse;     /* in RTL, write 5..1 so hover works left→right */
+  gap: 4px;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+.star-rating input { position: absolute; opacity: 0; pointer-events: none; }
+.star-rating label {
+  cursor: pointer;
+  color: var(--border);
+  transition: color 0.1s, transform 0.1s;
+  user-select: none;
+  padding: 0 2px;
+}
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label { color: var(--warning); }
+.star-rating label:hover { transform: scale(1.15); }
 
 /* cart */
 .cart-table {
@@ -242,6 +268,38 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .recs-header h2 { font-size: 1.2rem; }
 .recs-meta { color: var(--muted); font-size: 0.85rem; }
 .recs-meta strong { color: var(--accent); }
+
+.rec-card { position: relative; }
+.rank-badge {
+  position: absolute; top: 8px; left: 8px;
+  background: var(--accent); color: #0f1419;
+  font-weight: 800; font-size: 0.78rem;
+  padding: 0.2rem 0.55rem; border-radius: 999px;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  direction: ltr;
+}
+
+.pill {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  margin-inline-end: 4px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.pill-cat {
+  background: rgba(94,179,247,0.12);
+  color: var(--accent);
+  border-color: rgba(94,179,247,0.3);
+}
+.pill-score {
+  background: rgba(245,181,69,0.10);
+  color: var(--warning);
+  border-color: rgba(245,181,69,0.3);
+}
 
 footer { text-align: center; padding: 1.5rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); }
 

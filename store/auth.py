@@ -24,7 +24,7 @@ def load_logged_in_user():
         g.user = None
         return
     g.user = get_db().execute(
-        "SELECT id, username, email, full_name, age, location FROM users WHERE id = ?",
+        "SELECT user_id, username, full_name, age, location FROM users WHERE user_id = ?",
         (uid,),
     ).fetchone()
 
@@ -46,12 +46,12 @@ def login():
         identifier = request.form.get("identifier", "").strip()
         password   = request.form.get("password", "")
         row = get_db().execute(
-            "SELECT id, password_hash FROM users WHERE username = ? OR email = ?",
-            (identifier, identifier.lower()),
+            "SELECT user_id, password_hash FROM users WHERE username = ?",
+            (identifier,),
         ).fetchone()
         if row and check_password_hash(row["password_hash"], password):
             session.clear()
-            session["user_id"] = row["id"]
+            session["user_id"] = row["user_id"]
             return redirect(request.args.get("next") or url_for("home"))
         flash("بيانات الدخول غير صحيحة.", "error")
     return render_template("auth/login.html")

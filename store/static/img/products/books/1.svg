@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2e3d59"/>
+      <stop offset="100%" stop-color="#5a7ca8"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#g)"/>
+  <text x="200" y="180" text-anchor="middle"
+        font-family="Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,Twemoji,sans-serif"
+        font-size="140">📖</text>
+  <text x="200" y="260" text-anchor="middle"
+        font-family="Tahoma,Arial,sans-serif" font-size="22"
+        fill="rgba(255,255,255,0.85)" font-weight="700">كتب</text>
+</svg>

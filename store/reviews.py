@@ -8,7 +8,7 @@ bp = Blueprint("reviews", __name__, url_prefix="/reviews")
 
 
 def _ensure_product(product_id):
-    row = get_db().execute("SELECT 1 FROM products WHERE id = ?", (product_id,)).fetchone()
+    row = get_db().execute("SELECT 1 FROM products WHERE product_id = ?", (product_id,)).fetchone()
     if not row:
         abort(404)
 
@@ -28,9 +28,8 @@ def submit_rating(product_id):
     db = get_db()
     db.execute(
         "INSERT INTO ratings(user_id, product_id, rating) VALUES (?,?,?) "
-        "ON CONFLICT(user_id, product_id) DO UPDATE SET rating = excluded.rating, "
-        "created_at = datetime('now')",
-        (g.user["id"], product_id, rating))
+        "ON CONFLICT(user_id, product_id) DO UPDATE SET rating = excluded.rating",
+        (g.user["user_id"], product_id, rating))
     db.commit()
     flash("تم حفظ التقييم.", "success")
     return redirect(url_for("products.detail", product_id=product_id))
@@ -50,7 +49,7 @@ def submit_review(product_id):
     db = get_db()
     db.execute(
         "INSERT INTO reviews(user_id, product_id, comment) VALUES (?,?,?)",
-        (g.user["id"], product_id, comment))
+        (g.user["user_id"], product_id, comment))
     db.commit()
     flash("تم نشر المراجعة.", "success")
     return redirect(url_for("products.detail", product_id=product_id))

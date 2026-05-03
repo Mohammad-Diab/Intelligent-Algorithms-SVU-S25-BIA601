@@ -33,9 +33,11 @@
 </header>
 
 {% if g.user %}
-  <p class="muted" style="margin-bottom: 0.75rem;">أهلاً، <strong>{{ g.user['username'] }}</strong> — التوصيات أدناه تُحدَّث تلقائياً مع كل تفاعل.</p>
+  <p class="muted" style="margin-bottom: 0.75rem;">أهلاً، <strong>{{ g.user['full_name'] }}</strong> — التوصيات أدناه تُحدَّث تلقائياً مع كل تفاعل.</p>
 {% else %}
-  <p class="muted" style="margin-bottom: 0.75rem;"><a href="{{ url_for('auth.login') }}">سجّل الدخول</a> لرؤية توصيات مخصصة. (تجريبياً: <code>user1</code> / <code>user1</code>)</p>
+  <div class="home-cta">
+    <a href="{{ url_for('auth.login') }}" class="btn-primary btn-xl">سجّل الدخول لرؤية توصياتك</a>
+  </div>
 {% endif %}
 
 {% if recs %}
@@ -51,12 +53,17 @@
   </div>
   <div class="grid">
     {% for p in recs['products'] %}
-      <a class="card" href="{{ url_for('products.detail', product_id=p['id']) }}">
-        <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy">
+      <a class="card rec-card" href="{{ url_for('products.detail', product_id=p['product_id']) }}">
+        <span class="rank-badge" title="ترتيب الجين في الكروموسوم">Gen {{ p['rank'] }}</span>
+        <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy"
+             onerror="this.onerror=null;this.src='https://placehold.co/400x300/1a2028/5eb3f7?text=%23{{ p['product_id'] }}+{{ p['category']|urlencode }}';">
         <div class="card-body">
           <div class="card-title">{{ p['name'] }}</div>
-          <div class="card-meta">{{ p['category'] }} · درجة {{ '%.2f'|format(p['score']) }}</div>
-          <div class="card-price">${{ '%.2f'|format(p['price']) }}</div>
+          <div class="card-meta">
+            <span class="pill pill-cat">{{ p['category'] }}</span>
+            <span class="pill pill-score">درجة {{ '%.2f'|format(p['score']) }}</span>
+          </div>
+          <div class="card-price">{{ '%.2f'|format(p['price']) }} ل.س</div>
         </div>
       </a>
     {% endfor %}

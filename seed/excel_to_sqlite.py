@@ -1,6 +1,8 @@
 import os
 import sys
 import sqlite3
+import random
+from urllib.parse import quote
 import pandas as pd
 from werkzeug.security import generate_password_hash
 
@@ -14,73 +16,187 @@ DEFAULT_STOCK = 50
 PW_METHOD = "pbkdf2:sha256:1000"
 
 
-FIRST_NAMES = [
-    "Ahmed", "Mohammed", "Ali", "Omar", "Khalid", "Hassan", "Hussein",
-    "Mahmoud", "Youssef", "Ibrahim", "Bashar", "Rami", "Tariq", "Karim",
-    "Samir", "Nabil", "Ziad", "Adel", "Fadi", "Marwan",
-    "Fatima", "Layla", "Zainab", "Mariam", "Aisha", "Khadija", "Sara",
-    "Nour", "Hala", "Rana", "Lina", "Dalia", "Reem", "Salma", "Maya",
-    "Yara", "Hiba", "Amina", "Lubna", "Ghada",
-]
+# Per-category Arabic name + English keyword used for the image search.
+# (name_ar, image_keyword)
+CATEGORY_AR = {
+    "Toys": "ألعاب",
+    "Home Appliances": "أجهزة منزلية",
+    "Electronics": "إلكترونيات",
+    "Books": "كتب",
+    "Clothes": "ملابس",
+    "Sports": "رياضة",
+    "Perfumes": "عطور",
+}
 
-LAST_NAMES = [
-    "Al-Hassan", "Al-Khouri", "Al-Mansour", "Al-Saleh", "Haddad", "Najjar",
-    "Sayegh", "Rahman", "Diab", "Khalil", "Younes", "Awad", "Saadi",
-    "Tabbara", "Faraj", "Maalouf", "Shami", "Hariri", "Sabbagh",
-    "Hamdan", "Zein", "Bakri", "Daher", "Sulaiman", "Tannous", "Karam",
-]
+CATEGORY_SLUG = {
+    "Toys": "toys",
+    "Home Appliances": "home-appliances",
+    "Electronics": "electronics",
+    "Books": "books",
+    "Clothes": "clothes",
+    "Sports": "sports",
+    "Perfumes": "perfumes",
+}
 
-
-PRODUCT_NAMES = {
+PRODUCT_VARIANTS = {
     "Toys": [
-        "Wooden Train Set", "RC Race Car", "Plush Teddy Bear", "Rubik's Cube Pro",
-        "Building Blocks Kit", "Action Figure", "Board Game Classic", "Mini Drone",
-        "Puzzle 1000pc", "Doll House", "Toy Robot", "Magic Kit",
+        ("قطار خشبي", "wooden train toy"),
+        ("سيارة سباق تحكم", "rc race car toy"),
+        ("دبدوب قطني", "teddy bear plush"),
+        ("مكعب روبيك", "rubiks cube"),
+        ("مكعبات بناء", "building blocks toy"),
+        ("شخصية أكشن", "action figure"),
+        ("لعبة طاولة", "board game"),
+        ("درون مصغر", "mini drone"),
+        ("أحجية 1000 قطعة", "jigsaw puzzle"),
+        ("بيت دمى", "doll house"),
+        ("روبوت لعبة", "toy robot"),
+        ("مجموعة سحر", "magic kit toy"),
     ],
     "Home Appliances": [
-        "Coffee Maker Deluxe", "Vacuum Cleaner X1", "Air Fryer Pro", "Blender Plus",
-        "4-Slice Toaster", "Microwave 25L", "Steam Iron", "Electric Kettle",
-        "Rice Cooker", "Stand Mixer", "Slow Cooker", "Dishwasher Compact",
+        ("صانعة قهوة فاخرة", "coffee maker"),
+        ("مكنسة كهربائية", "vacuum cleaner"),
+        ("قلاية هوائية", "air fryer"),
+        ("خلاط كهربائي", "kitchen blender"),
+        ("محمصة خبز", "kitchen toaster"),
+        ("ميكروويف", "microwave oven"),
+        ("مكواة بخار", "steam iron"),
+        ("غلاية كهربائية", "electric kettle"),
+        ("طباخ أرز", "rice cooker"),
+        ("خلاط مع حامل", "stand mixer"),
+        ("طباخ بطيء", "slow cooker"),
+        ("غسالة صحون", "dishwasher"),
     ],
     "Electronics": [
-        "Bluetooth Speaker", "Wireless Earbuds", "Smart Watch", "USB-C Hub",
-        "Power Bank 20000mAh", "4K Webcam", "Mechanical Keyboard", "Gaming Mouse",
-        "27-inch Monitor", "External SSD 1TB", "WiFi Router", "Smart Plug",
+        ("سماعة بلوتوث", "bluetooth speaker"),
+        ("سماعات لاسلكية", "wireless earbuds"),
+        ("ساعة ذكية", "smartwatch"),
+        ("موزع USB-C", "usb hub"),
+        ("بنك طاقة", "power bank"),
+        ("كاميرا ويب", "webcam"),
+        ("لوحة مفاتيح ميكانيكية", "mechanical keyboard"),
+        ("ماوس ألعاب", "gaming mouse"),
+        ("شاشة كمبيوتر", "computer monitor"),
+        ("قرص SSD خارجي", "external ssd drive"),
+        ("راوتر واي فاي", "wifi router"),
+        ("قابس ذكي", "smart plug"),
     ],
     "Books": [
-        "Mystery Novel", "Cookbook Volume 1", "History of the Levant",
-        "Self-Help Guide", "Sci-Fi Anthology", "Programming Manual",
-        "Poetry Collection", "Hardcover Biography", "Travel Guide",
-        "Children's Storybook", "Photography Album", "Philosophy Reader",
+        ("رواية غموض", "mystery book"),
+        ("كتاب طبخ", "cookbook"),
+        ("كتاب تاريخ", "history book"),
+        ("دليل تطوير الذات", "self help book"),
+        ("خيال علمي", "science fiction book"),
+        ("دليل البرمجة", "programming book"),
+        ("ديوان شعر", "poetry book"),
+        ("سيرة ذاتية", "biography book"),
+        ("دليل سفر", "travel book"),
+        ("قصص أطفال", "children book"),
+        ("ألبوم تصوير", "photography book"),
+        ("كتاب فلسفة", "philosophy book"),
     ],
     "Clothes": [
-        "Cotton T-Shirt", "Slim-Fit Jeans", "Wool Sweater", "Linen Shirt",
-        "Hooded Sweatshirt", "Summer Dress", "Leather Jacket", "Polo Shirt",
-        "Cargo Shorts", "Pleated Skirt", "Trench Coat", "Knit Cardigan",
+        ("تيشيرت قطني", "cotton tshirt"),
+        ("جينز", "jeans"),
+        ("كنزة صوف", "wool sweater"),
+        ("قميص كتان", "linen shirt"),
+        ("هودي", "hoodie"),
+        ("فستان صيفي", "summer dress"),
+        ("جاكيت جلد", "leather jacket"),
+        ("بولو شيرت", "polo shirt"),
+        ("شورت", "shorts clothing"),
+        ("تنورة", "skirt clothing"),
+        ("معطف", "trench coat"),
+        ("كارديغان", "cardigan sweater"),
     ],
     "Sports": [
-        "Yoga Mat Pro", "Adjustable Dumbbells", "Football Premium", "Tennis Racket",
-        "Cycling Helmet", "Running Shoes", "Resistance Band Set", "Jump Rope Speed",
-        "Boxing Gloves", "Swim Goggles", "Hiking Backpack", "Foam Roller",
+        ("سجادة يوغا", "yoga mat"),
+        ("دمبل", "dumbbells"),
+        ("كرة قدم", "soccer ball"),
+        ("مضرب تنس", "tennis racket"),
+        ("خوذة دراجة", "bicycle helmet"),
+        ("حذاء جري", "running shoes"),
+        ("أحزمة مقاومة", "resistance bands"),
+        ("حبل قفز", "jump rope"),
+        ("قفازات ملاكمة", "boxing gloves"),
+        ("نظارة سباحة", "swim goggles"),
+        ("حقيبة تسلق", "hiking backpack"),
+        ("أسطوانة تدليك", "foam roller"),
     ],
     "Perfumes": [
-        "Oud Royal", "Rose Garden EDP", "Sandalwood Mist", "Jasmine Bloom",
-        "Amber Nights", "Citrus Breeze", "Vanilla Musk", "Ocean Spray Cologne",
-        "Patchouli Classic", "Cedar Wood Eau", "Lavender Fields", "Saffron Velvet",
+        ("عود ملكي", "oud perfume"),
+        ("عطر ورد", "rose perfume"),
+        ("عطر صندل", "sandalwood perfume"),
+        ("عطر ياسمين", "jasmine perfume"),
+        ("عطر عنبر", "amber perfume"),
+        ("عطر حمضيات", "citrus perfume"),
+        ("عطر فانيلا", "vanilla perfume"),
+        ("كولونيا", "cologne bottle"),
+        ("عطر باتشولي", "patchouli perfume"),
+        ("عطر أرز", "cedar perfume"),
+        ("عطر خزامى", "lavender perfume"),
+        ("عطر زعفران", "saffron perfume"),
+    ],
+}
+
+
+REVIEW_TEMPLATES = {
+    5: [
+        "منتج ممتاز جداً، أنصح به بشدة!",
+        "جودة رائعة، وصل في الوقت المحدد.",
+        "تجاوز توقعاتي، يستحق كل قرش.",
+        "من أفضل المنتجات التي اشتريتها.",
+        "خدمة وسرعة وجودة عالية.",
+        "قيمة استثنائية مقابل السعر.",
+    ],
+    4: [
+        "جيد جداً وقيمة مقابل المال.",
+        "راضٍ عن الشراء، ينقصه القليل.",
+        "جودة جيدة، التغليف ممكن أن يكون أفضل.",
+        "أنصح به للمبتدئين.",
+        "تجربة إيجابية بشكل عام.",
+    ],
+    3: [
+        "متوسط، يفي بالغرض.",
+        "ليس سيئاً ولكن ليس مميزاً.",
+        "السعر مناسب للجودة.",
+        "بحاجة لتحسينات بسيطة.",
+    ],
+    2: [
+        "لم يعجبني كثيراً، توقعت أفضل.",
+        "الجودة دون المتوقع.",
+        "لن أعيد شراءه.",
+    ],
+    1: [
+        "غير راضٍ نهائياً.",
+        "مضيعة للمال، لا أنصح به.",
+        "وصل بحالة سيئة.",
+    ],
+    "purchased_only": [
+        "وصل بسرعة وبحالة جيدة.",
+        "تم الشراء، التغليف محترم.",
+        "أحتاج وقتاً أطول لتقييمه.",
     ],
 }
 
 
 def _user_full_name(uid):
-    first = FIRST_NAMES[(uid - 1) % len(FIRST_NAMES)]
-    last  = LAST_NAMES[((uid - 1) // len(FIRST_NAMES)) % len(LAST_NAMES)]
-    return f"{first} {last} #{uid}"
+    return f"مستخدم {uid}"
 
 
-def _product_name(category, pid):
-    pool = PRODUCT_NAMES.get(category, [f"{category} Premium"])
-    base = pool[(pid - 1) % len(pool)]
-    return f"{base} #{pid}"
+def _product_info(category, pid):
+    pool = PRODUCT_VARIANTS.get(category)
+    if not pool:
+        cat_ar = CATEGORY_AR.get(category, category)
+        return f"#{pid} {cat_ar}", category.lower()
+    name_ar, kw = pool[(pid - 1) % len(pool)]
+    return f"#{pid} {name_ar}", kw
+
+
+def _image_url(category_en, pid):
+    slug = CATEGORY_SLUG.get(category_en, "toys")
+    variant = pid % 5
+    return f"/static/img/products/{slug}/{variant}.svg"
 
 
 def _wipe(conn):
@@ -99,15 +215,14 @@ def seed_users(conn):
         rows.append((
             uid,
             username,
-            f"{username}@example.com",
             generate_password_hash(username, method=PW_METHOD),
             _user_full_name(uid),
             int(r.age),
             str(r.country),
         ))
     conn.executemany(
-        "INSERT INTO users(id, username, email, password_hash, full_name, age, location) "
-        "VALUES (?,?,?,?,?,?,?)", rows)
+        "INSERT INTO users(user_id, username, password_hash, full_name, age, location) "
+        "VALUES (?,?,?,?,?,?)", rows)
     return len(rows)
 
 
@@ -116,19 +231,20 @@ def seed_products(conn):
     rows = []
     for r in df.itertuples():
         pid = int(r.product_id)
-        cat = str(r.category)
-        name = _product_name(cat, pid)
+        cat_en = str(r.category)
+        cat_ar = CATEGORY_AR.get(cat_en, cat_en)
+        name_ar, kw = _product_info(cat_en, pid)
         rows.append((
             pid,
-            name,
-            cat,
+            name_ar,
+            cat_ar,
             float(r.price),
-            f"https://picsum.photos/seed/p{pid}/400/300",
-            f"{name} — a quality {cat.lower()} product.",
+            _image_url(cat_en, pid),
+            f"{name_ar} — منتج {cat_ar} عالي الجودة.",
             DEFAULT_STOCK,
         ))
     conn.executemany(
-        "INSERT INTO products(id, name, category, price, image_url, description, stock) "
+        "INSERT INTO products(product_id, name, category, price, image_url, description, stock) "
         "VALUES (?,?,?,?,?,?,?)", rows)
     return len(rows)
 
@@ -156,6 +272,33 @@ def seed_behavior(conn):
     return len(rows)
 
 
+def seed_reviews(conn):
+    rng = random.Random(42)
+    rated = conn.execute(
+        "SELECT user_id, product_id, rating FROM ratings ORDER BY user_id, product_id"
+    ).fetchall()
+    purchased = conn.execute(
+        "SELECT DISTINCT b.user_id, b.product_id FROM behavior b "
+        "WHERE b.event='purchased' "
+        "AND NOT EXISTS (SELECT 1 FROM ratings r "
+        "                WHERE r.user_id=b.user_id AND r.product_id=b.product_id) "
+        "LIMIT 1500"
+    ).fetchall()
+
+    rows = []
+    for uid, pid, rating in rated:
+        if rng.random() < 0.55:
+            tpl = REVIEW_TEMPLATES.get(int(rating), REVIEW_TEMPLATES["purchased_only"])
+            rows.append((uid, pid, rng.choice(tpl)))
+    for uid, pid in purchased:
+        if rng.random() < 0.30:
+            rows.append((uid, pid, rng.choice(REVIEW_TEMPLATES["purchased_only"])))
+
+    conn.executemany(
+        "INSERT INTO reviews(user_id, product_id, comment) VALUES (?,?,?)", rows)
+    return len(rows)
+
+
 def main():
     store_db.init_db()
     conn = sqlite3.connect(store_db.DB_PATH)
@@ -166,10 +309,12 @@ def main():
         np_ = seed_products(conn)
         nr = seed_ratings(conn)
         nb = seed_behavior(conn)
+        nrev = seed_reviews(conn)
         conn.commit()
     finally:
         conn.close()
-    print(f"Seeded: users={nu} products={np_} ratings={nr} behavior_events={nb}")
+    print(f"Seeded: users={nu} products={np_} ratings={nr} "
+          f"behavior_events={nb} reviews={nrev}")
     print("Login: username == password (e.g. user1 / user1, user42 / user42)")
 
 
