@@ -77,7 +77,7 @@ DOI: 10.31893/multiscience.2025003 · https://malque.pub/ojs/index.php/msj/artic
 
 ## Contributors
 
-- Haidra Dalalah (Haidra_155085, C2)
+- Haidra Dalalah
 - [Add remaining team members]
 
 ## License
