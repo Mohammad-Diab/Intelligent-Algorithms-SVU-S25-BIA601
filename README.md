@@ -1,57 +1,58 @@
 # الخوارزميات الذكية — نظام توصية المنتجات
 ### Intelligent Algorithms — E-Commerce Recommender (Genetic Algorithm)
 
-A web application that improves product recommendations in an e-commerce store using a **Genetic Algorithm** — built for BIA601 · SVU · Spring 2025.
+A working e-commerce store whose "Recommended for you" engine combines a **Decision Tree** (predicts each user's preferred category) with a **Genetic Algorithm** (optimizes the recommendation list) — built for BIA601 · SVU · Spring 2025.
 
 ---
 
 ## Contents
 
-- Genetic Algorithm engine for personalized product recommendations
-- Composite scoring combining explicit ratings and implicit behavior (view / click / purchase)
-- Diversity-aware fitness function with category balancing
-- Order Crossover (OX) and Swap Mutation operators
-- Tournament selection with elitism
-- Web UI to select a user and view their recommended products
+- Online store: register/login, browse products, search & filter, product details, ratings (1–5), reviews, cart, checkout
+- Behavior tracking: every view / click / cart-add / purchase is logged so the recommender learns from live activity
+- Decision Tree predicts each user's preferred category from their behavior history
+- Genetic Algorithm optimizes the recommendation list using composite ratings + behavior + DT bias + diversity
+- Standalone GA sandbox in [test_algo/](test_algo/) (Excel-backed, used during R&D)
 
 ## Tech Stack
 
-- **Backend:** Python + Flask (single-file API)
-- **GA engine:** Custom implementation in pure Python + NumPy
-- **Data:** pandas reading Excel files directly (no database)
-- **Frontend:** HTML + CSS + JavaScript (no framework, no build step)
-- **Hosting:** Render (backend) / static UI served by Flask
+- **Backend:** Python + Flask (modular blueprints)
+- **DB:** SQLite (8 tables, seeded from the provided Excel datasets)
+- **ML:** scikit-learn (Decision Tree) + custom Genetic Algorithm (NumPy)
+- **Frontend:** Server-rendered Jinja2 templates + plain CSS
+- **Hosting:** Render
 
 ## File Structure
 
 ```
-test_algo/                — standalone GA prototype (Excel-backed)
-  app.py
-  data_loader.py
-  genetic_algorithm.py
+store/                    — online store + DT+GA recommender (SQLite)
+  app.py                  — Flask entry / app factory
+  db.py                   — SQLite schema + connection helpers
+  auth.py                 — register / login / logout
+  products.py             — list, search, filter, detail
+  reviews.py              — ratings (1-5) + comments
+  templates/              — Jinja2 (base, auth/, products/, ...)
+  static/style.css
   requirements.txt
-  static/
-store/                    — full online store + DT+GA recommender (SQLite) [in progress]
-data/                     — source Excel datasets
-  users.xlsx
-  products.xlsx
-  ratings.xlsx
-  behavior_15500.xlsx
-OnlineStore/              — original C# store (reference, being ported to Python)
-plan.md                   — project plan
-tasks.md                  — task checklist
-report.md                 — technical report (Arabic)
+seed/
+  excel_to_sqlite.py      — one-shot import from data/*.xlsx
+test_algo/                — standalone GA prototype (Excel-backed sandbox)
+data/                     — source Excel datasets (users, products, ratings, behavior)
+OnlineStore/              — original C# store (reference for porting; gitignored)
+plan.md, tasks.md, report.md
 ```
 
 ## Usage
 
 ```bash
-cd test_algo
+cd store
 pip install -r requirements.txt
+python ../seed/excel_to_sqlite.py    # one-time: import Excel data → store.db
 python app.py
 ```
 
-Then open `http://localhost:5000` in a browser.
+Then open `http://localhost:5000` in a browser. Any seeded user can log in with username `user1` … `user1000` and password `password`.
+
+To run the standalone GA sandbox instead, see [test_algo/README.md](test_algo/README.md).
 
 ## Live Demo
 
