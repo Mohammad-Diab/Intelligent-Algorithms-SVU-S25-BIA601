@@ -35,7 +35,7 @@
 {% if g.user %}
   <p class="muted" style="margin-bottom: 0.75rem;">أهلاً، <strong>{{ g.user['username'] }}</strong> — التوصيات أدناه تُحدَّث تلقائياً مع كل تفاعل.</p>
 {% else %}
-  <p class="muted" style="margin-bottom: 0.75rem;"><a href="{{ url_for('auth.login') }}">سجّل الدخول</a> لرؤية توصيات مخصصة. (تجريبياً: <code>user1</code> / <code>password</code>)</p>
+  <p class="muted" style="margin-bottom: 0.75rem;"><a href="{{ url_for('auth.login') }}">سجّل الدخول</a> لرؤية توصيات مخصصة. (تجريبياً: <code>user1</code> / <code>user1</code>)</p>
 {% endif %}
 
 {% if recs %}

@@ -53,7 +53,7 @@ python ../seed/excel_to_sqlite.py    # one-time: import Excel data → store.db
 python app.py
 ```
 
-Then open `http://localhost:5000` in a browser. Any seeded user can log in with username `user1` … `user1000` and password `password`.
+Then open `http://localhost:5000` in a browser. Seeded accounts are `user1` … `user1000` and the password equals the username (`user1` / `user1`, `user42` / `user42`, etc.).
 
 To run the standalone GA sandbox instead, see [test_algo/README.md](test_algo/README.md).
 

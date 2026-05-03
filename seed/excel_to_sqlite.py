@@ -10,8 +10,8 @@ sys.path.insert(0, os.path.join(ROOT, "store"))
 import db as store_db
 
 DATA_DIR = os.path.join(ROOT, "data")
-DEFAULT_PASSWORD = "password"
 DEFAULT_STOCK = 50
+PW_METHOD = "pbkdf2:sha256:1000"
 
 
 FIRST_NAMES = [
@@ -92,15 +92,15 @@ def _wipe(conn):
 
 def seed_users(conn):
     df = pd.read_excel(os.path.join(DATA_DIR, "users.xlsx"))
-    pw = generate_password_hash(DEFAULT_PASSWORD)
     rows = []
     for r in df.itertuples():
         uid = int(r.user_id)
+        username = f"user{uid}"
         rows.append((
             uid,
-            f"user{uid}",
-            f"user{uid}@example.com",
-            pw,
+            username,
+            f"{username}@example.com",
+            generate_password_hash(username, method=PW_METHOD),
             _user_full_name(uid),
             int(r.age),
             str(r.country),
@@ -170,7 +170,7 @@ def main():
     finally:
         conn.close()
     print(f"Seeded: users={nu} products={np_} ratings={nr} behavior_events={nb}")
-    print(f"Default login password for every user: {DEFAULT_PASSWORD!r}")
+    print("Login: username == password (e.g. user1 / user1, user42 / user42)")
 
 
 if __name__ == "__main__":
