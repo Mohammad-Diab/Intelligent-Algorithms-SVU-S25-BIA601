@@ -19,20 +19,27 @@
   {% set ep = request.endpoint or '' %}
 
   <!-- Row 1: Topbar (full width) -->
-  <header class="sticky top-0 z-30 glass px-6 py-3 flex items-center justify-between gap-4 flex-shrink-0">
-    <a href="{{ url_for('home') }}" class="flex items-center gap-3 flex-shrink-0">
-      <div
-        class="w-11 h-11 rounded-full bg-gradient-to-br from-purple-300 to-purple-500 flex items-center justify-center text-white text-xl font-bold shadow-md">
-        H</div>
-      <span class="font-en font-extrabold text-2xl tracking-tight">
-        <span class="text-gray-900">Homs</span><span class="text-purple-600">Store</span>
-      </span>
-    </a>
-    <nav class="flex items-center gap-3 text-sm flex-shrink-0">
+  <header class="sticky top-0 z-30 glass px-3 md:px-6 py-3 flex items-center justify-between gap-2 md:gap-4 flex-shrink-0">
+    <div class="flex items-center gap-2">
       {% if g.user %}
-      <span class="flex items-center gap-2 text-sm text-gray-700">
-        <i class="fas fa-user-circle text-purple-500 text-3xl"></i>
-        <span>مرحباً، <strong class="text-gray-900">{{ g.user['full_name'] }}</strong></span>
+      <button id="mobile-toggle" type="button" class="md:hidden w-10 h-10 rounded-full glass-button flex items-center justify-center text-gray-700" aria-label="القائمة">
+        <i class="fas fa-bars"></i>
+      </button>
+      {% endif %}
+      <a href="{{ url_for('home') }}" class="flex items-center gap-2 md:gap-3 flex-shrink-0">
+        <div
+          class="w-10 h-10 md:w-11 md:h-11 rounded-full bg-gradient-to-br from-purple-300 to-purple-500 flex items-center justify-center text-white text-lg md:text-xl font-bold shadow-md">
+          H</div>
+        <span class="font-en font-extrabold text-xl md:text-2xl tracking-tight">
+          <span class="text-gray-900">Homs</span><span class="text-purple-600">Store</span>
+        </span>
+      </a>
+    </div>
+    <nav class="flex items-center gap-2 md:gap-3 text-sm flex-shrink-0">
+      {% if g.user %}
+      <span class="hidden sm:flex items-center gap-2 text-sm text-gray-700">
+        <i class="fas fa-user-circle text-purple-500 text-2xl md:text-3xl"></i>
+        <span class="hidden md:inline">مرحباً، <strong class="text-gray-900">{{ g.user['full_name'] }}</strong></span>
       </span>
 
       <a href="{{ url_for('cart.view_cart') }}" class="cart-chip relative" title="العربة">
@@ -41,14 +48,13 @@
         <span class="cart-badge">{{ cart_count }}</span>
         {% endif %}
       </a>
-      
+
       <a href="{{ url_for('auth.logout') }}" class="logout-chip" title="تسجيل الخروج">
         <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">خروج</span>
       </a>
       {% else %}
       <a href="{{ url_for('auth.login') }}"
-        class="bg-gray-900 text-white px-5 py-2 rounded-full font-semibold hover:bg-gray-800 transition shadow-md text-xs">تسجيل
-        الدخول</a>
+        class="bg-gray-900 text-white px-4 md:px-5 py-2 rounded-full font-semibold hover:bg-gray-800 transition shadow-md text-xs">تسجيل الدخول</a>
       {% endif %}
     </nav>
   </header>
@@ -80,8 +86,8 @@
     ('عطور', 'perfumes', 'fa-spray-can-sparkles'),
     ] %}
     {% set current_cat = request.args.get('category') %}
-    <aside
-      class="w-64 flex-shrink-0 glass p-5 flex flex-col gap-4 sticky top-[68px] self-start max-h-[calc(100vh-68px)] overflow-y-auto">
+    <aside id="sidebar"
+      class="sidebar w-64 flex-shrink-0 glass p-5 flex flex-col gap-4 sticky top-[68px] self-start max-h-[calc(100vh-68px)] overflow-y-auto">
 
       <!-- Section: Discover -->
       <div>
@@ -145,7 +151,7 @@
     {% endif %}
 
     <div class="flex flex-col flex-1 min-w-0">
-      <main class="flex-1 px-4 md:px-8 py-8">
+      <main class="flex-1 px-3 sm:px-4 md:px-8 py-6 md:py-8">
         {% block content %}{% endblock %}
       </main>
       <footer class="text-center py-6 text-xs text-gray-500 border-t border-white/40">
@@ -155,8 +161,25 @@
 
   </div>
 
+  <!-- Mobile sidebar overlay -->
+  {% if g.user %}
+  <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+  {% endif %}
+
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>AOS.init({ duration: 600, once: true, offset: 30 });</script>
+  <script>
+    (function () {
+      const toggle = document.getElementById('mobile-toggle');
+      const overlay = document.getElementById('sidebar-overlay');
+      const sidebar = document.getElementById('sidebar');
+      if (!toggle || !sidebar) return;
+      const close = () => document.body.classList.remove('sidebar-open');
+      toggle.addEventListener('click', () => document.body.classList.toggle('sidebar-open'));
+      overlay && overlay.addEventListener('click', close);
+      sidebar.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+    })();
+  </script>
   {% block extra_js %}{% endblock %}
 </body>
 
