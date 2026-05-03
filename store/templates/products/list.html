@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}
+{% block content %}
+<section class="products-header">
+  <h1>Products</h1>
+  <form method="get" class="filters">
+    <input name="q" value="{{ q }}" placeholder="Search products...">
+    <select name="category">
+      <option value="">All categories</option>
+      {% for c in categories %}
+        <option value="{{ c }}" {% if c == category %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Filter</button>
+    {% if q or category %}<a href="{{ url_for('products.list_products') }}" class="muted">Clear</a>{% endif %}
+  </form>
+  <p class="muted">{{ total }} product{{ '' if total == 1 else 's' }}</p>
+</section>
+
+{% if products %}
+<div class="grid">
+  {% for p in products %}
+    <a class="card" href="#">
+      <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy">
+      <div class="card-body">
+        <div class="card-title">{{ p['name'] }}</div>
+        <div class="card-meta">{{ p['category'] }}</div>
+        <div class="card-price">${{ '%.2f'|format(p['price']) }}</div>
+      </div>
+    </a>
+  {% endfor %}
+</div>
+
+{% if pages > 1 %}
+<nav class="pager">
+  {% if page > 1 %}
+    <a href="{{ url_for('products.list_products', q=q, category=category, page=page-1) }}">&larr; Prev</a>
+  {% endif %}
+  <span class="muted">Page {{ page }} / {{ pages }}</span>
+  {% if page < pages %}
+    <a href="{{ url_for('products.list_products', q=q, category=category, page=page+1) }}">Next &rarr;</a>
+  {% endif %}
+</nav>
+{% endif %}
+
+{% else %}
+  <p class="muted">No products match.</p>
+{% endif %}
+{% endblock %}

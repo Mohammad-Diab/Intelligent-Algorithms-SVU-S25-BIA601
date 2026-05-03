@@ -10,7 +10,7 @@
   <header class="topbar">
     <a href="{{ url_for('home') }}" class="brand">BIA601 Store</a>
     <nav>
-      <a href="#">Products</a>
+      <a href="{{ url_for('products.list_products') }}">Products</a>
       <a href="#">Cart</a>
       {% if g.user %}
         <span class="muted">Hi, {{ g.user['username'] }}</span>
