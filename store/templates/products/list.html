@@ -1,20 +1,20 @@
 {% extends "base.html" %}
-{% block title %}Products{% endblock %}
+{% block title %}المنتجات{% endblock %}
 {% block content %}
 <section class="products-header">
-  <h1>Products</h1>
+  <h1>المنتجات</h1>
   <form method="get" class="filters">
-    <input name="q" value="{{ q }}" placeholder="Search products...">
+    <input name="q" value="{{ q }}" placeholder="ابحث عن منتج...">
     <select name="category">
-      <option value="">All categories</option>
+      <option value="">كل الفئات</option>
       {% for c in categories %}
         <option value="{{ c }}" {% if c == category %}selected{% endif %}>{{ c }}</option>
       {% endfor %}
     </select>
-    <button type="submit">Filter</button>
-    {% if q or category %}<a href="{{ url_for('products.list_products') }}" class="muted">Clear</a>{% endif %}
+    <button type="submit">تصفية</button>
+    {% if q or category %}<a href="{{ url_for('products.list_products') }}" class="muted">مسح</a>{% endif %}
   </form>
-  <p class="muted">{{ total }} product{{ '' if total == 1 else 's' }}</p>
+  <p class="muted">{{ total }} منتج</p>
 </section>
 
 {% if products %}
@@ -34,16 +34,16 @@
 {% if pages > 1 %}
 <nav class="pager">
   {% if page > 1 %}
-    <a href="{{ url_for('products.list_products', q=q, category=category, page=page-1) }}">&larr; Prev</a>
+    <a href="{{ url_for('products.list_products', q=q, category=category, page=page-1) }}">السابق &rarr;</a>
   {% endif %}
-  <span class="muted">Page {{ page }} / {{ pages }}</span>
+  <span class="muted">صفحة {{ page }} / {{ pages }}</span>
   {% if page < pages %}
-    <a href="{{ url_for('products.list_products', q=q, category=category, page=page+1) }}">Next &rarr;</a>
+    <a href="{{ url_for('products.list_products', q=q, category=category, page=page+1) }}">&larr; التالي</a>
   {% endif %}
 </nav>
 {% endif %}
 
 {% else %}
-  <p class="muted">No products match.</p>
+  <p class="muted">لا توجد منتجات مطابقة.</p>
 {% endif %}
 {% endblock %}

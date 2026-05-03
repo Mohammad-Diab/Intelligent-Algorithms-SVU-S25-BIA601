@@ -44,10 +44,10 @@ def add(product_id):
 
     if new_qty > p["stock"]:
         new_qty = p["stock"]
-        flash(f"Only {p['stock']} in stock — quantity capped.", "error")
+        flash(f"المتوفر في المخزون فقط {p['stock']} — تم تعديل الكمية.", "error")
 
     if new_qty <= 0:
-        flash("Out of stock.", "error")
+        flash("نفد المخزون.", "error")
         return redirect(request.referrer or url_for("products.detail", product_id=product_id))
 
     db.execute(
@@ -56,7 +56,7 @@ def add(product_id):
         (g.user["id"], product_id, new_qty))
     db.commit()
     log_event(g.user["id"], product_id, "added_to_cart")
-    flash("Added to cart.", "success")
+    flash("تمت الإضافة إلى العربة.", "success")
     return redirect(request.referrer or url_for("cart.view_cart"))
 
 
@@ -77,7 +77,7 @@ def update(product_id):
             abort(404)
         if qty > stock["stock"]:
             qty = stock["stock"]
-            flash(f"Quantity capped at stock ({stock['stock']}).", "error")
+            flash(f"تم تعديل الكمية إلى الحد المتوفر ({stock['stock']}).", "error")
         db.execute(
             "INSERT INTO cart_items(user_id, product_id, qty) VALUES (?,?,?) "
             "ON CONFLICT(user_id, product_id) DO UPDATE SET qty = excluded.qty",
@@ -93,7 +93,7 @@ def remove(product_id):
     db.execute("DELETE FROM cart_items WHERE user_id = ? AND product_id = ?",
                (g.user["id"], product_id))
     db.commit()
-    flash("Item removed.", "success")
+    flash("تم حذف العنصر.", "success")
     return redirect(url_for("cart.view_cart"))
 
 
@@ -103,12 +103,12 @@ def checkout():
     db = get_db()
     items = _cart_rows(g.user["id"])
     if not items:
-        flash("Your cart is empty.", "error")
+        flash("عربتك فارغة.", "error")
         return redirect(url_for("cart.view_cart"))
 
     for r in items:
         if r["qty"] > r["stock"]:
-            flash(f"'{r['name']}' has only {r['stock']} in stock.", "error")
+            flash(f"'{r['name']}' المتوفر منه فقط {r['stock']} في المخزون.", "error")
             return redirect(url_for("cart.view_cart"))
 
     total = sum(r["line_total"] for r in items)

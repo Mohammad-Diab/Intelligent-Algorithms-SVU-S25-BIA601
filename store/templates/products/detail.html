@@ -7,12 +7,12 @@
     <h1>{{ product['name'] }}</h1>
     <div class="muted">{{ product['category'] }}</div>
     <div class="detail-price">${{ '%.2f'|format(product['price']) }}</div>
-    <div class="muted">In stock: {{ product['stock'] }}</div>
+    <div class="muted">المتوفر في المخزون: {{ product['stock'] }}</div>
     <div class="rating-summary">
       {% if avg_rating is not none %}
-        ★ {{ '%.2f'|format(avg_rating) }} ({{ rating_count }} rating{{ '' if rating_count == 1 else 's' }})
+        <span class="star">★</span> {{ '%.2f'|format(avg_rating) }} ({{ rating_count }} تقييم)
       {% else %}
-        <span class="muted">No ratings yet</span>
+        <span class="muted">لا توجد تقييمات بعد</span>
       {% endif %}
     </div>
     <p>{{ product['description'] }}</p>
@@ -20,24 +20,24 @@
       {% if g.user %}
         <form method="post" action="{{ url_for('cart.add', product_id=product['id']) }}" class="add-to-cart">
           <input type="number" name="qty" value="1" min="1" max="{{ product['stock'] }}">
-          <button type="submit" class="btn-primary">Add to cart</button>
+          <button type="submit" class="btn-primary">أضف إلى العربة</button>
         </form>
       {% else %}
-        <a href="{{ url_for('auth.login', next=request.path) }}" class="btn-primary">Login to buy</a>
+        <a href="{{ url_for('auth.login', next=request.path) }}" class="btn-primary">سجّل الدخول للشراء</a>
       {% endif %}
     {% else %}
-      <button class="btn-primary" disabled>Out of stock</button>
+      <button class="btn-primary" disabled>نفد المخزون</button>
     {% endif %}
   </div>
 </section>
 
 <section class="reviews">
-  <h2>Ratings & Reviews</h2>
+  <h2>التقييمات والمراجعات</h2>
 
   {% if g.user %}
     <div class="review-forms">
       <form method="post" action="{{ url_for('reviews.submit_rating', product_id=product['id']) }}" class="form-inline">
-        <label>Your rating:
+        <label>تقييمك:
           <select name="rating" required>
             <option value="">--</option>
             {% for n in [1,2,3,4,5] %}
@@ -45,16 +45,16 @@
             {% endfor %}
           </select>
         </label>
-        <button type="submit">{{ 'Update rating' if user_rating else 'Submit rating' }}</button>
+        <button type="submit">{{ 'تحديث التقييم' if user_rating else 'إرسال التقييم' }}</button>
       </form>
 
       <form method="post" action="{{ url_for('reviews.submit_review', product_id=product['id']) }}" class="form-inline">
-        <textarea name="comment" placeholder="Write a review..." required maxlength="1000" rows="3"></textarea>
-        <button type="submit">Post review</button>
+        <textarea name="comment" placeholder="اكتب مراجعتك..." required maxlength="1000" rows="3"></textarea>
+        <button type="submit">نشر المراجعة</button>
       </form>
     </div>
   {% else %}
-    <p class="muted"><a href="{{ url_for('auth.login', next=request.path) }}">Login</a> to rate or review this product.</p>
+    <p class="muted"><a href="{{ url_for('auth.login', next=request.path) }}">سجّل الدخول</a> لتقييم أو مراجعة هذا المنتج.</p>
   {% endif %}
 
   {% if reviews %}
@@ -67,7 +67,7 @@
       {% endfor %}
     </ul>
   {% else %}
-    <p class="muted">No reviews yet.</p>
+    <p class="muted">لا توجد مراجعات بعد.</p>
   {% endif %}
 </section>
 {% endblock %}

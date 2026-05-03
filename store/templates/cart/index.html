@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Cart{% endblock %}
+{% block title %}العربة{% endblock %}
 {% block content %}
-<h1>Your Cart</h1>
+<h1>عربة التسوق</h1>
 
 {% if items %}
 <table class="cart-table">
   <thead>
     <tr>
-      <th></th><th>Product</th><th>Price</th><th>Qty</th><th>Total</th><th></th>
+      <th></th><th>المنتج</th><th>السعر</th><th>الكمية</th><th>المجموع</th><th></th>
     </tr>
   </thead>
   <tbody>
@@ -19,28 +19,28 @@
         <td>
           <form method="post" action="{{ url_for('cart.update', product_id=r['id']) }}" class="qty-form">
             <input type="number" name="qty" value="{{ r['qty'] }}" min="0" max="{{ r['stock'] }}">
-            <button type="submit">Update</button>
+            <button type="submit">تحديث</button>
           </form>
         </td>
         <td>${{ '%.2f'|format(r['line_total']) }}</td>
         <td>
           <form method="post" action="{{ url_for('cart.remove', product_id=r['id']) }}">
-            <button type="submit" class="link-btn">Remove</button>
+            <button type="submit" class="link-btn">حذف</button>
           </form>
         </td>
       </tr>
     {% endfor %}
   </tbody>
   <tfoot>
-    <tr><td colspan="4" class="ar">Total:</td><td><strong>${{ '%.2f'|format(total) }}</strong></td><td></td></tr>
+    <tr><td colspan="4" class="ar">الإجمالي:</td><td><strong>${{ '%.2f'|format(total) }}</strong></td><td></td></tr>
   </tfoot>
 </table>
 
 <form method="post" action="{{ url_for('cart.checkout') }}" class="checkout-form">
-  <button type="submit" class="btn-primary">Pay ${{ '%.2f'|format(total) }}</button>
+  <button type="submit" class="btn-primary">ادفع ${{ '%.2f'|format(total) }}</button>
 </form>
 
 {% else %}
-<p class="muted">Your cart is empty. <a href="{{ url_for('products.list_products') }}">Browse products</a>.</p>
+<p class="muted">عربتك فارغة. <a href="{{ url_for('products.list_products') }}">تصفّح المنتجات</a>.</p>
 {% endif %}
 {% endblock %}

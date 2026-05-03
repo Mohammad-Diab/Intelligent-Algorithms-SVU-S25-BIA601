@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}تسجيل الدخول{% endblock %}
 {% block content %}
 <section class="auth-card">
-  <h1>Login</h1>
+  <h1>تسجيل الدخول</h1>
   <form method="post" class="form">
-    <label>Username or email
+    <label>اسم المستخدم أو البريد الإلكتروني
       <input name="identifier" required autofocus>
     </label>
-    <label>Password
+    <label>كلمة المرور
       <input name="password" type="password" required>
     </label>
-    <button type="submit">Login</button>
+    <button type="submit">دخول</button>
   </form>
-  <p class="muted">No account? <a href="{{ url_for('auth.register') }}">Register</a></p>
+  <p class="muted">حسابات للتجربة: <code>user1</code> ... <code>user1000</code> · كلمة المرور <code>password</code></p>
 </section>
 {% endblock %}

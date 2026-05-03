@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import (Blueprint, render_template, request, redirect, url_for,
                    session, flash, g)
-from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.security import check_password_hash
 
 from db import get_db
 
@@ -29,49 +29,6 @@ def load_logged_in_user():
     ).fetchone()
 
 
-@bp.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        username = request.form.get("username", "").strip()
-        email    = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "")
-        full_name = request.form.get("full_name", "").strip()
-        age      = request.form.get("age", "").strip()
-        location = request.form.get("location", "").strip()
-
-        error = None
-        if not username or not email or not password:
-            error = "Username, email, and password are required."
-        elif len(password) < 4:
-            error = "Password must be at least 4 characters."
-
-        if error is None:
-            db = get_db()
-            try:
-                cur = db.execute(
-                    "INSERT INTO users(username, email, password_hash, full_name, age, location) "
-                    "VALUES (?,?,?,?,?,?)",
-                    (username, email, generate_password_hash(password),
-                     full_name or None,
-                     int(age) if age.isdigit() else None,
-                     location or None),
-                )
-                db.commit()
-                session.clear()
-                session["user_id"] = cur.lastrowid
-                return redirect(url_for("home"))
-            except Exception as e:
-                msg = str(e).lower()
-                if "users.username" in msg:
-                    error = "Username already taken."
-                elif "users.email" in msg:
-                    error = "Email already registered."
-                else:
-                    error = "Could not register."
-        flash(error, "error")
-    return render_template("auth/register.html")
-
-
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -85,7 +42,7 @@ def login():
             session.clear()
             session["user_id"] = row["id"]
             return redirect(request.args.get("next") or url_for("home"))
-        flash("Invalid credentials.", "error")
+        flash("بيانات الدخول غير صحيحة.", "error")
     return render_template("auth/login.html")
 
 

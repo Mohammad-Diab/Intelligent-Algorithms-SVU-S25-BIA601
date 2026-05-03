@@ -22,7 +22,7 @@ def submit_rating(product_id):
     except ValueError:
         rating = 0
     if rating < 1 or rating > 5:
-        flash("Rating must be between 1 and 5.", "error")
+        flash("التقييم يجب أن يكون بين 1 و 5.", "error")
         return redirect(url_for("products.detail", product_id=product_id))
 
     db = get_db()
@@ -32,7 +32,7 @@ def submit_rating(product_id):
         "created_at = datetime('now')",
         (g.user["id"], product_id, rating))
     db.commit()
-    flash("Rating saved.", "success")
+    flash("تم حفظ التقييم.", "success")
     return redirect(url_for("products.detail", product_id=product_id))
 
 
@@ -42,7 +42,7 @@ def submit_review(product_id):
     _ensure_product(product_id)
     comment = (request.form.get("comment") or "").strip()
     if not comment:
-        flash("Review cannot be empty.", "error")
+        flash("المراجعة لا يمكن أن تكون فارغة.", "error")
         return redirect(url_for("products.detail", product_id=product_id))
     if len(comment) > 1000:
         comment = comment[:1000]
@@ -52,5 +52,5 @@ def submit_review(product_id):
         "INSERT INTO reviews(user_id, product_id, comment) VALUES (?,?,?)",
         (g.user["id"], product_id, comment))
     db.commit()
-    flash("Review posted.", "success")
+    flash("تم نشر المراجعة.", "success")
     return redirect(url_for("products.detail", product_id=product_id))

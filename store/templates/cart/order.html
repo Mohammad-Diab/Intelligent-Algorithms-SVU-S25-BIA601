@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Order #{{ order['id'] }}{% endblock %}
+{% block title %}طلب رقم {{ order['id'] }}{% endblock %}
 {% block content %}
 <section class="order-conf">
-  <h1>Thanks for your order!</h1>
-  <p class="muted">Order #{{ order['id'] }} · {{ order['created_at'] }}</p>
+  <h1>شكراً لطلبك!</h1>
+  <p class="muted">طلب رقم #{{ order['id'] }} · {{ order['created_at'] }}</p>
 
   <table class="cart-table">
-    <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+    <thead><tr><th>المنتج</th><th>الكمية</th><th>السعر</th><th>المجموع</th></tr></thead>
     <tbody>
       {% for r in items %}
         <tr>
@@ -17,9 +17,9 @@
         </tr>
       {% endfor %}
     </tbody>
-    <tfoot><tr><td colspan="3" class="ar">Total:</td><td><strong>${{ '%.2f'|format(order['total']) }}</strong></td></tr></tfoot>
+    <tfoot><tr><td colspan="3" class="ar">الإجمالي:</td><td><strong>${{ '%.2f'|format(order['total']) }}</strong></td></tr></tfoot>
   </table>
 
-  <a href="{{ url_for('products.list_products') }}" class="btn-primary">Continue shopping</a>
+  <a href="{{ url_for('products.list_products') }}" class="btn-primary">متابعة التسوق</a>
 </section>
 {% endblock %}
