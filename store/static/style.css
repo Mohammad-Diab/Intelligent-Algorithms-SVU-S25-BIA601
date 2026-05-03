@@ -77,3 +77,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 24px; }
 .checkout-form { margin-top: 16px; text-align: right; }
 .checkout-form .btn-primary { padding: 12px 24px; font-size: 16px; }
 .order-conf .cart-table { margin: 16px 0; }
+
+.recs { margin-top: 24px; }
+.recs-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+.recs-header h2 { margin: 0; font-size: 20px; }

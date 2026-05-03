@@ -1,10 +1,11 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, g
 
 import db
 import auth
 import products
 import reviews
 import cart
+import recommender
 
 
 def create_app():
@@ -19,7 +20,13 @@ def create_app():
 
     @app.route("/")
     def home():
-        return render_template("home.html")
+        recs = None
+        if g.user:
+            try:
+                recs = recommender.recommend(g.user["id"], top_n=8, ga_seed=42)
+            except Exception:
+                recs = None
+        return render_template("home.html", recs=recs)
 
     return app
 

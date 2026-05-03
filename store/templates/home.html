@@ -1,7 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="hero">
-  <h1>Welcome</h1>
-  <p>BIA601 Online Store — recommendations powered by Genetic Algorithm + Decision Tree.</p>
+  <h1>Welcome{% if g.user %}, {{ g.user['username'] }}{% endif %}</h1>
+  <p>BIA601 Online Store — recommendations powered by Decision Tree + Genetic Algorithm.</p>
 </section>
+
+{% if recs %}
+<section class="recs">
+  <div class="recs-header">
+    <h2>Recommended for you</h2>
+    {% if recs['preferred_category'] %}
+      <span class="muted">DT prediction: <strong>{{ recs['preferred_category'] }}</strong> · GA fitness: {{ '%.2f'|format(recs['fitness']) }}</span>
+    {% endif %}
+  </div>
+  <div class="grid">
+    {% for p in recs['products'] %}
+      <a class="card" href="{{ url_for('products.detail', product_id=p['id']) }}">
+        <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy">
+        <div class="card-body">
+          <div class="card-title">{{ p['name'] }}</div>
+          <div class="card-meta">{{ p['category'] }} · score {{ '%.2f'|format(p['score']) }}</div>
+          <div class="card-price">${{ '%.2f'|format(p['price']) }}</div>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% elif g.user %}
+<p class="muted">Browse and rate a few products — your personalized recommendations will appear here.</p>
+{% else %}
+<p class="muted"><a href="{{ url_for('auth.login') }}">Login</a> to see personalized recommendations.</p>
+{% endif %}
 {% endblock %}
