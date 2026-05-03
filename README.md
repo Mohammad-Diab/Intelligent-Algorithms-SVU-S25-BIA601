@@ -26,18 +26,21 @@ A working e-commerce store whose "Recommended for you" engine combines a **Decis
 ```
 store/                    — online store + DT+GA recommender (SQLite)
   app.py                  — Flask entry / app factory
-  db.py                   — SQLite schema + connection helpers
-  auth.py                 — register / login / logout
-  products.py             — list, search, filter, detail
-  reviews.py              — ratings (1-5) + comments
-  templates/              — Jinja2 (base, auth/, products/, ...)
+  db.py                   — SQLite schema + connection + log_event helper
+  auth.py                 — register / login / logout (werkzeug hashing)
+  products.py             — list, search, filter, detail (logs `clicked`)
+  reviews.py              — ratings (1–5, upsert) + comments
+  cart.py                 — add / update / remove / checkout (logs `added_to_cart`, `purchased`)
+  recommender.py          — SQLite snapshot + composite score + Decision Tree
+  ga.py                   — pure-Python Genetic Algorithm (OX, swap, tournament, elitism)
+  templates/              — Jinja2 (base, auth/, products/, cart/, home)
   static/style.css
   requirements.txt
 seed/
-  excel_to_sqlite.py      — one-shot import from data/*.xlsx
+  excel_to_sqlite.py      — one-shot import from data/*.xlsx → store.db
 test_algo/                — standalone GA prototype (Excel-backed sandbox)
 data/                     — source Excel datasets (users, products, ratings, behavior)
-OnlineStore/              — original C# store (reference for porting; gitignored)
+OnlineStore/              — original C# store (reference; gitignored)
 plan.md, tasks.md, report.md
 ```
 
@@ -56,9 +59,11 @@ To run the standalone GA sandbox instead, see [test_algo/README.md](test_algo/RE
 
 ## Live Demo
 
-https://bia601-recommender.onrender.com
+- **Full store (DT + GA hybrid, SQLite):** https://bia601-recommender.onrender.com
+- **Standalone GA sandbox (Excel-backed prototype):** https://bia601-ga-sandbox.onrender.com
+- **3-minute demo video:** _[paste link after recording]_
 
-> Hosted on Render free tier — first request after idle may take ~30s to wake up.
+> Both services are hosted on Render free tier — first request after idle may take ~30s to wake up. The "GA Sandbox" link is also accessible from the navigation bar inside the main store.
 
 ## Scientific Reference
 

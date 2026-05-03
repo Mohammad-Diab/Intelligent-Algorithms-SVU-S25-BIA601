@@ -12,6 +12,7 @@
     <nav>
       <a href="{{ url_for('products.list_products') }}">Products</a>
       <a href="{{ url_for('cart.view_cart') }}">Cart</a>
+      <a href="https://bia601-ga-sandbox.onrender.com" target="_blank" rel="noopener" title="Standalone GA prototype (Excel-backed)">GA Sandbox ↗</a>
       {% if g.user %}
         <span class="muted">Hi, {{ g.user['username'] }}</span>
         <a href="{{ url_for('auth.logout') }}">Logout</a>

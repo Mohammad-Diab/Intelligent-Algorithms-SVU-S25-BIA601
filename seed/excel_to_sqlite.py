@@ -14,6 +14,75 @@ DEFAULT_PASSWORD = "password"
 DEFAULT_STOCK = 50
 
 
+FIRST_NAMES = [
+    "Ahmed", "Mohammed", "Ali", "Omar", "Khalid", "Hassan", "Hussein",
+    "Mahmoud", "Youssef", "Ibrahim", "Bashar", "Rami", "Tariq", "Karim",
+    "Samir", "Nabil", "Ziad", "Adel", "Fadi", "Marwan",
+    "Fatima", "Layla", "Zainab", "Mariam", "Aisha", "Khadija", "Sara",
+    "Nour", "Hala", "Rana", "Lina", "Dalia", "Reem", "Salma", "Maya",
+    "Yara", "Hiba", "Amina", "Lubna", "Ghada",
+]
+
+LAST_NAMES = [
+    "Al-Hassan", "Al-Khouri", "Al-Mansour", "Al-Saleh", "Haddad", "Najjar",
+    "Sayegh", "Rahman", "Diab", "Khalil", "Younes", "Awad", "Saadi",
+    "Tabbara", "Faraj", "Maalouf", "Shami", "Hariri", "Sabbagh",
+    "Hamdan", "Zein", "Bakri", "Daher", "Sulaiman", "Tannous", "Karam",
+]
+
+
+PRODUCT_NAMES = {
+    "Toys": [
+        "Wooden Train Set", "RC Race Car", "Plush Teddy Bear", "Rubik's Cube Pro",
+        "Building Blocks Kit", "Action Figure", "Board Game Classic", "Mini Drone",
+        "Puzzle 1000pc", "Doll House", "Toy Robot", "Magic Kit",
+    ],
+    "Home Appliances": [
+        "Coffee Maker Deluxe", "Vacuum Cleaner X1", "Air Fryer Pro", "Blender Plus",
+        "4-Slice Toaster", "Microwave 25L", "Steam Iron", "Electric Kettle",
+        "Rice Cooker", "Stand Mixer", "Slow Cooker", "Dishwasher Compact",
+    ],
+    "Electronics": [
+        "Bluetooth Speaker", "Wireless Earbuds", "Smart Watch", "USB-C Hub",
+        "Power Bank 20000mAh", "4K Webcam", "Mechanical Keyboard", "Gaming Mouse",
+        "27-inch Monitor", "External SSD 1TB", "WiFi Router", "Smart Plug",
+    ],
+    "Books": [
+        "Mystery Novel", "Cookbook Volume 1", "History of the Levant",
+        "Self-Help Guide", "Sci-Fi Anthology", "Programming Manual",
+        "Poetry Collection", "Hardcover Biography", "Travel Guide",
+        "Children's Storybook", "Photography Album", "Philosophy Reader",
+    ],
+    "Clothes": [
+        "Cotton T-Shirt", "Slim-Fit Jeans", "Wool Sweater", "Linen Shirt",
+        "Hooded Sweatshirt", "Summer Dress", "Leather Jacket", "Polo Shirt",
+        "Cargo Shorts", "Pleated Skirt", "Trench Coat", "Knit Cardigan",
+    ],
+    "Sports": [
+        "Yoga Mat Pro", "Adjustable Dumbbells", "Football Premium", "Tennis Racket",
+        "Cycling Helmet", "Running Shoes", "Resistance Band Set", "Jump Rope Speed",
+        "Boxing Gloves", "Swim Goggles", "Hiking Backpack", "Foam Roller",
+    ],
+    "Perfumes": [
+        "Oud Royal", "Rose Garden EDP", "Sandalwood Mist", "Jasmine Bloom",
+        "Amber Nights", "Citrus Breeze", "Vanilla Musk", "Ocean Spray Cologne",
+        "Patchouli Classic", "Cedar Wood Eau", "Lavender Fields", "Saffron Velvet",
+    ],
+}
+
+
+def _user_full_name(uid):
+    first = FIRST_NAMES[(uid - 1) % len(FIRST_NAMES)]
+    last  = LAST_NAMES[((uid - 1) // len(FIRST_NAMES)) % len(LAST_NAMES)]
+    return f"{first} {last} #{uid}"
+
+
+def _product_name(category, pid):
+    pool = PRODUCT_NAMES.get(category, [f"{category} Premium"])
+    base = pool[(pid - 1) % len(pool)]
+    return f"{base} #{pid}"
+
+
 def _wipe(conn):
     for t in ["order_items", "orders", "cart_items", "reviews",
               "behavior", "ratings", "products", "users"]:
@@ -24,16 +93,18 @@ def _wipe(conn):
 def seed_users(conn):
     df = pd.read_excel(os.path.join(DATA_DIR, "users.xlsx"))
     pw = generate_password_hash(DEFAULT_PASSWORD)
-    rows = [
-        (int(r.user_id),
-         f"user{int(r.user_id)}",
-         f"user{int(r.user_id)}@example.com",
-         pw,
-         f"User {int(r.user_id)}",
-         int(r.age),
-         str(r.country))
-        for r in df.itertuples()
-    ]
+    rows = []
+    for r in df.itertuples():
+        uid = int(r.user_id)
+        rows.append((
+            uid,
+            f"user{uid}",
+            f"user{uid}@example.com",
+            pw,
+            _user_full_name(uid),
+            int(r.age),
+            str(r.country),
+        ))
     conn.executemany(
         "INSERT INTO users(id, username, email, password_hash, full_name, age, location) "
         "VALUES (?,?,?,?,?,?,?)", rows)
@@ -42,16 +113,20 @@ def seed_users(conn):
 
 def seed_products(conn):
     df = pd.read_excel(os.path.join(DATA_DIR, "products.xlsx"))
-    rows = [
-        (int(r.product_id),
-         f"{r.category} Item #{int(r.product_id)}",
-         str(r.category),
-         float(r.price),
-         f"https://picsum.photos/seed/p{int(r.product_id)}/400/300",
-         f"A quality {str(r.category).lower()} product (#{int(r.product_id)}).",
-         DEFAULT_STOCK)
-        for r in df.itertuples()
-    ]
+    rows = []
+    for r in df.itertuples():
+        pid = int(r.product_id)
+        cat = str(r.category)
+        name = _product_name(cat, pid)
+        rows.append((
+            pid,
+            name,
+            cat,
+            float(r.price),
+            f"https://picsum.photos/seed/p{pid}/400/300",
+            f"{name} — a quality {cat.lower()} product.",
+            DEFAULT_STOCK,
+        ))
     conn.executemany(
         "INSERT INTO products(id, name, category, price, image_url, description, stock) "
         "VALUES (?,?,?,?,?,?,?)", rows)

@@ -1,6 +1,19 @@
 services:
+  # New full store with DT + GA hybrid recommender (SQLite)
   - type: web
     name: bia601-recommender
+    runtime: python
+    plan: free
+    rootDir: store
+    buildCommand: pip install -r requirements.txt && python ../seed/excel_to_sqlite.py
+    startCommand: gunicorn "app:create_app()" --bind 0.0.0.0:$PORT --workers 1 --timeout 120
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
+  # Original standalone GA sandbox (Excel-backed) — kept live for reference / comparison
+  - type: web
+    name: bia601-ga-sandbox
     runtime: python
     plan: free
     rootDir: test_algo
