@@ -1,9 +1,12 @@
 from flask import Flask, render_template
 
+import db
+
 
 def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "dev-change-me"
+    db.init_app(app)
 
     @app.route("/")
     def home():

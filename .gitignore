@@ -37,4 +37,9 @@ build/
 
 # Misc
 Intelligent Algorithms
+OnlineStore/*
 
+# Runtime SQLite DB (created by store/db.py)
+store.db
+*.sqlite
+*.sqlite3
