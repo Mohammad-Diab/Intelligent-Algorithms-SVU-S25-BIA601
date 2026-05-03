@@ -3,6 +3,7 @@ from flask import Flask, render_template
 import db
 import auth
 import products
+import reviews
 
 
 def create_app():
@@ -11,6 +12,7 @@ def create_app():
     db.init_app(app)
     app.register_blueprint(auth.bp)
     app.register_blueprint(products.bp)
+    app.register_blueprint(reviews.bp)
     app.before_request(auth.load_logged_in_user)
 
     @app.route("/")

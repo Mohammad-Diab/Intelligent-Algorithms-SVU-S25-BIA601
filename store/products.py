@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, abort
 
 from db import get_db
 
@@ -39,4 +39,41 @@ def list_products():
         "products/list.html",
         products=products, categories=categories,
         q=q, category=category, page=page, pages=pages, total=total,
+    )
+
+
+@bp.route("/<int:product_id>")
+def detail(product_id):
+    db = get_db()
+    p = db.execute(
+        "SELECT id, name, category, price, image_url, description, stock "
+        "FROM products WHERE id = ?", (product_id,)).fetchone()
+    if p is None:
+        abort(404)
+
+    rating_row = db.execute(
+        "SELECT AVG(rating) AS avg, COUNT(*) AS n FROM ratings WHERE product_id = ?",
+        (product_id,)).fetchone()
+    avg_rating = float(rating_row["avg"]) if rating_row["avg"] is not None else None
+    rating_count = rating_row["n"]
+
+    reviews = db.execute(
+        "SELECT r.comment, r.created_at, u.username "
+        "FROM reviews r JOIN users u ON u.id = r.user_id "
+        "WHERE r.product_id = ? ORDER BY r.created_at DESC LIMIT 50",
+        (product_id,)).fetchall()
+
+    user_rating = None
+    from flask import g
+    if g.user:
+        row = db.execute(
+            "SELECT rating FROM ratings WHERE user_id = ? AND product_id = ?",
+            (g.user["id"], product_id)).fetchone()
+        if row:
+            user_rating = row["rating"]
+
+    return render_template(
+        "products/detail.html",
+        product=p, avg_rating=avg_rating, rating_count=rating_count,
+        reviews=reviews, user_rating=user_rating,
     )

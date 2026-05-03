@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}{{ product['name'] }}{% endblock %}
+{% block content %}
+<section class="detail">
+  <img class="detail-img" src="{{ product['image_url'] }}" alt="{{ product['name'] }}">
+  <div class="detail-info">
+    <h1>{{ product['name'] }}</h1>
+    <div class="muted">{{ product['category'] }}</div>
+    <div class="detail-price">${{ '%.2f'|format(product['price']) }}</div>
+    <div class="muted">In stock: {{ product['stock'] }}</div>
+    <div class="rating-summary">
+      {% if avg_rating is not none %}
+        ★ {{ '%.2f'|format(avg_rating) }} ({{ rating_count }} rating{{ '' if rating_count == 1 else 's' }})
+      {% else %}
+        <span class="muted">No ratings yet</span>
+      {% endif %}
+    </div>
+    <p>{{ product['description'] }}</p>
+    <button class="btn-primary" disabled title="Cart coming soon">Add to cart</button>
+  </div>
+</section>
+
+<section class="reviews">
+  <h2>Ratings & Reviews</h2>
+
+  {% if g.user %}
+    <div class="review-forms">
+      <form method="post" action="{{ url_for('reviews.submit_rating', product_id=product['id']) }}" class="form-inline">
+        <label>Your rating:
+          <select name="rating" required>
+            <option value="">--</option>
+            {% for n in [1,2,3,4,5] %}
+              <option value="{{ n }}" {% if user_rating == n %}selected{% endif %}>{{ n }} ★</option>
+            {% endfor %}
+          </select>
+        </label>
+        <button type="submit">{{ 'Update rating' if user_rating else 'Submit rating' }}</button>
+      </form>
+
+      <form method="post" action="{{ url_for('reviews.submit_review', product_id=product['id']) }}" class="form-inline">
+        <textarea name="comment" placeholder="Write a review..." required maxlength="1000" rows="3"></textarea>
+        <button type="submit">Post review</button>
+      </form>
+    </div>
+  {% else %}
+    <p class="muted"><a href="{{ url_for('auth.login', next=request.path) }}">Login</a> to rate or review this product.</p>
+  {% endif %}
+
+  {% if reviews %}
+    <ul class="review-list">
+      {% for r in reviews %}
+        <li>
+          <div class="review-head"><strong>{{ r['username'] }}</strong> <span class="muted">{{ r['created_at'] }}</span></div>
+          <div>{{ r['comment'] }}</div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="muted">No reviews yet.</p>
+  {% endif %}
+</section>
+{% endblock %}
