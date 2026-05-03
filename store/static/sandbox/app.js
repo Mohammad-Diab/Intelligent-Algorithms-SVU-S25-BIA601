@@ -60,7 +60,7 @@
       card.className = "algo-card";
       card.innerHTML = `
         <div class="rank">${i + 1}</div>
-        <div class="name">عنصر #${p.product_id}</div>
+        <div class="name">${p.name || ('#' + p.product_id)}</div>
         <div class="category">${p.category}</div>
         <div class="price">${p.price.toFixed(2)}</div>
         <div class="score">

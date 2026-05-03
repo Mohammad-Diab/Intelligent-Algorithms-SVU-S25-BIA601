@@ -441,7 +441,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
   margin: 0.5rem 0;
 }
 
-.algo-card .price::after { content: " $"; color: var(--muted); font-size: 0.85rem; }
+.algo-card .price::after { content: " ل.س"; color: var(--muted); font-size: 0.85rem; }
 
 .algo-card .score {
   display: flex;

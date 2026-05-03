@@ -18,7 +18,7 @@ def _build_data():
     users = db.execute(
         "SELECT user_id, age, location FROM users ORDER BY user_id").fetchall()
     products = db.execute(
-        "SELECT product_id, category, price FROM products ORDER BY product_id").fetchall()
+        "SELECT product_id, name, category, price FROM products ORDER BY product_id").fetchall()
     rating_rows = db.execute(
         "SELECT user_id, product_id, rating FROM ratings").fetchall()
     behavior_rows = db.execute(
@@ -127,6 +127,7 @@ def recommend(user_id):
             continue
         recs.append({
             "product_id": p["product_id"],
+            "name": p["name"],
             "category": p["category"],
             "price": float(p["price"]),
             "score": round(data["score_matrix"].get((user_id, pid), 0.0), 3),

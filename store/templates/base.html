@@ -12,46 +12,46 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
   {% block extra_css %}{% endblock %}
 </head>
-<body class="antialiased min-h-screen">
+<body class="antialiased min-h-screen flex flex-col">
 
   {% set ep = request.endpoint or '' %}
+  {% set page_label = {
+    'home': 'الرئيسية',
+    'products.list_products': 'المنتجات',
+    'products.detail': 'تفاصيل المنتج',
+    'cart.view_cart': 'العربة',
+    'cart.order_confirmation': 'تأكيد الطلب',
+    'sandbox.index': 'النموذج التجريبي',
+    'auth.login': 'تسجيل الدخول',
+  }.get(ep, '') %}
 
-  <!-- Sidebar (desktop only) -->
-  {% if g.user %}
-  <aside class="hidden lg:flex flex-col fixed top-0 right-0 h-screen w-64 glass z-30 p-6 overflow-y-auto">
-    <a href="{{ url_for('home') }}" class="flex items-center gap-2 mb-8">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">B</div>
-      <span class="font-bold text-gray-800 text-sm">BIA601</span>
+  <!-- Row 1: Topbar (full width) -->
+  <header class="sticky top-0 z-30 glass px-6 py-3 flex items-center justify-between gap-4 flex-shrink-0">
+    <a href="{{ url_for('home') }}" class="flex items-center gap-3 flex-shrink-0">
+      <div class="w-11 h-11 rounded-full bg-gradient-to-br from-purple-300 to-purple-500 flex items-center justify-center text-white text-xl font-bold shadow-md">H</div>
+      <span class="font-en font-extrabold text-2xl tracking-tight">
+        <span class="text-gray-900">Homs</span><span class="text-purple-600">Store</span>
+      </span>
     </a>
-    <nav class="flex flex-col gap-1 text-sm">
-      <a href="{{ url_for('home') }}" class="side-link {{ 'active' if ep == 'home' else '' }}"><i class="fas fa-home w-5 text-center"></i> الرئيسية</a>
-      <a href="{{ url_for('products.list_products') }}" class="side-link {{ 'active' if ep.startswith('products.') else '' }}"><i class="fas fa-box w-5 text-center"></i> المنتجات</a>
-      <a href="{{ url_for('cart.view_cart') }}" class="side-link {{ 'active' if ep.startswith('cart.') else '' }}"><i class="fas fa-shopping-cart w-5 text-center"></i> العربة</a>
-      <a href="{{ url_for('sandbox.index') }}" class="side-link {{ 'active' if ep.startswith('sandbox.') else '' }}"><i class="fas fa-flask w-5 text-center"></i> النموذج التجريبي</a>
-    </nav>
-    <div class="mt-auto pt-6 border-t border-white/40 text-xs">
-      <div class="text-gray-600 mb-2">مرحباً، <strong class="text-gray-800">{{ g.user['full_name'] }}</strong></div>
-      <a href="{{ url_for('auth.logout') }}" class="text-pink-600 hover:text-pink-800 font-semibold flex items-center gap-1"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
-    </div>
-  </aside>
-  {% endif %}
-
-  <!-- Top bar (mobile + when logged out) -->
-  <header class="fixed top-0 left-0 right-0 z-20 glass px-6 py-3 flex items-center justify-between {% if g.user %}lg:right-64{% endif %}">
-    <a href="{{ url_for('home') }}" class="flex items-center gap-2">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold">B</div>
-      <span class="font-bold text-gray-800 text-sm hidden sm:inline">متجر التوصية الذكي</span>
-    </a>
-    <nav class="flex items-center gap-3 text-sm">
+    {% if page_label %}
+      <span class="hidden md:inline text-sm font-semibold text-gray-700 truncate"><i class="fas fa-circle text-[6px] text-purple-400 align-middle mx-2"></i>{{ page_label }}</span>
+    {% endif %}
+    <nav class="flex items-center gap-3 text-sm flex-shrink-0">
       {% if g.user %}
-        <a href="{{ url_for('cart.view_cart') }}" class="lg:hidden text-gray-700 hover:text-purple-600"><i class="fas fa-shopping-cart"></i></a>
-        <a href="{{ url_for('auth.logout') }}" class="lg:hidden text-pink-600 font-semibold">خروج</a>
+        <span class="flex items-center gap-2 text-sm text-gray-700">
+          <i class="fas fa-user-circle text-purple-500 text-3xl"></i>
+          <span>مرحباً، <strong class="text-gray-900">{{ g.user['full_name'] }}</strong></span>
+        </span>
+        <a href="{{ url_for('auth.logout') }}" class="logout-chip" title="تسجيل الخروج">
+          <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">خروج</span>
+        </a>
       {% else %}
         <a href="{{ url_for('auth.login') }}" class="bg-gray-900 text-white px-5 py-2 rounded-full font-semibold hover:bg-gray-800 transition shadow-md text-xs">تسجيل الدخول</a>
       {% endif %}
     </nav>
   </header>
 
+  <!-- Flash messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       <div class="fixed top-16 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 space-y-2">
@@ -64,13 +64,82 @@
     {% endif %}
   {% endwith %}
 
-  <main class="{% if g.user %}lg:mr-64{% endif %} pt-20 px-4 md:px-8 pb-12">
-    {% block content %}{% endblock %}
-  </main>
+  <!-- Row 2: Sidebar + Main -->
+  <div class="flex flex-1">
 
-  <footer class="text-center py-6 text-xs text-gray-500 {% if g.user %}lg:mr-64{% endif %}">
-    SVU · S25 · BIA601 — الخوارزميات الذكية
-  </footer>
+    {% if g.user %}
+    {% set sidebar_cats = [
+        ('ألعاب', 'fa-gamepad'),
+        ('أجهزة منزلية', 'fa-blender'),
+        ('إلكترونيات', 'fa-laptop'),
+        ('كتب', 'fa-book'),
+        ('ملابس', 'fa-shirt'),
+        ('رياضة', 'fa-futbol'),
+        ('عطور', 'fa-spray-can-sparkles'),
+    ] %}
+    {% set current_cat = request.args.get('category') %}
+    <aside class="w-64 flex-shrink-0 glass p-5 flex flex-col gap-4 sticky top-[68px] self-start max-h-[calc(100vh-68px)] overflow-y-auto">
+
+      <!-- Section: Discover -->
+      <div>
+        <h6 class="side-section-title">اكتشاف</h6>
+        <nav class="flex flex-col gap-1.5 mt-2">
+          <a href="{{ url_for('home') }}" class="side-link {{ 'active' if ep == 'home' else '' }}">
+            <span class="side-icon"><i class="fas fa-home"></i></span> الرئيسية
+          </a>
+          <a href="{{ url_for('products.list_products') }}" class="side-link {{ 'active' if ep.startswith('products.') and not current_cat else '' }}">
+            <span class="side-icon"><i class="fas fa-compass"></i></span> تصفح الكل
+          </a>
+          <a href="{{ url_for('cart.view_cart') }}" class="side-link {{ 'active' if ep.startswith('cart.') else '' }}">
+            <span class="side-icon"><i class="fas fa-shopping-cart"></i></span> العربة
+          </a>
+          <a href="{{ url_for('sandbox.index') }}" class="side-link {{ 'active' if ep.startswith('sandbox.') else '' }}">
+            <span class="side-icon"><i class="fas fa-flask"></i></span> النموذج التجريبي
+          </a>
+        </nav>
+      </div>
+
+      <!-- Section: Categories -->
+      <div>
+        <h6 class="side-section-title">الفئات</h6>
+        <nav class="flex flex-col gap-1.5 mt-2">
+          {% for cat_name, cat_icon in sidebar_cats %}
+            <a href="{{ url_for('products.list_products', category=cat_name) }}"
+               class="side-link {{ 'active' if current_cat == cat_name else '' }}">
+              <span class="side-icon"><i class="fas {{ cat_icon }}"></i></span> {{ cat_name }}
+            </a>
+          {% endfor %}
+        </nav>
+      </div>
+
+      <!-- AI Card -->
+      <div class="mt-auto">
+        <div class="ai-card">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-2xl">🧬</span>
+            <span class="font-extrabold text-gray-900 text-base">مدعوم بالذكاء</span>
+          </div>
+          <p class="text-xs text-gray-600 mb-4 leading-relaxed">
+            خوارزمية جينية ترشّح لك المنتجات الأنسب بناءً على تفاعلك.
+          </p>
+          <a href="{{ url_for('home') }}" class="ai-btn">
+            احصل على التوصيات
+          </a>
+        </div>
+      </div>
+    </aside>
+    {% endif %}
+
+    <div class="flex flex-col flex-1 min-w-0">
+      <main class="flex-1 px-4 md:px-8 py-8">
+        {% block content %}{% endblock %}
+      </main>
+      <footer class="text-center py-6 text-xs text-gray-500 border-t border-white/40">
+        SVU · S25 · BIA601 — الخوارزميات الذكية
+      </footer>
+    </div>
+
+  </div>
 
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   <script>AOS.init({duration:600, once:true, offset:30});</script>
