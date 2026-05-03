@@ -52,6 +52,7 @@ def detail(product_id):
         abort(404)
 
     if g.user:
+        log_event(g.user["id"], product_id, "viewed")
         log_event(g.user["id"], product_id, "clicked")
 
     rating_row = db.execute(

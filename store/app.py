@@ -29,7 +29,7 @@ def _ensure_seeded(app):
 
 def create_app():
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = "dev-change-me"
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-change-me")
     db.init_app(app)
     _ensure_seeded(app)
     app.register_blueprint(auth.bp)
