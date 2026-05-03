@@ -1,12 +1,15 @@
 from flask import Flask, render_template
 
 import db
+import auth
 
 
 def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "dev-change-me"
     db.init_app(app)
+    app.register_blueprint(auth.bp)
+    app.before_request(auth.load_logged_in_user)
 
     @app.route("/")
     def home():

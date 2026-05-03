@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<section class="auth-card">
+  <h1>Login</h1>
+  <form method="post" class="form">
+    <label>Username or email
+      <input name="identifier" required autofocus>
+    </label>
+    <label>Password
+      <input name="password" type="password" required>
+    </label>
+    <button type="submit">Login</button>
+  </form>
+  <p class="muted">No account? <a href="{{ url_for('auth.register') }}">Register</a></p>
+</section>
+{% endblock %}

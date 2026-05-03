@@ -8,3 +8,14 @@ main { max-width: 1100px; margin: 0 auto; padding: 24px; }
 .hero { padding: 48px 0; text-align: center; }
 .hero h1 { margin: 0 0 8px; font-size: 32px; }
 .hero p { margin: 0; color: #555; }
+.muted { color: #888; font-size: 14px; }
+.auth-card { max-width: 380px; margin: 32px auto; padding: 24px; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; }
+.auth-card h1 { margin-top: 0; font-size: 22px; }
+.form label { display: block; margin-bottom: 12px; font-size: 14px; color: #333; }
+.form input { width: 100%; padding: 8px 10px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+.form button { width: 100%; padding: 10px; background: #1a1a1a; color: #fff; border: 0; border-radius: 4px; font-size: 14px; cursor: pointer; }
+.form button:hover { background: #000; }
+.flashes { max-width: 1100px; margin: 12px auto 0; padding: 0 24px; }
+.flash { padding: 10px 14px; border-radius: 4px; margin-bottom: 8px; font-size: 14px; }
+.flash-error { background: #fdecea; color: #b00020; border: 1px solid #f5c2c7; }
+.flash-success { background: #e6f4ea; color: #1e6c33; border: 1px solid #b6dfbe; }
