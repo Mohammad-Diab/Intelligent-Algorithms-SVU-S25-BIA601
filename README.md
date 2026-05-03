@@ -1,5 +1,5 @@
-# نظام توصية المنتجات بالخوارزميات الجينية
-### Product Recommendation System with Genetic Algorithms (Decision Tree + GA Hybrid)
+# متجر لاختبار نظام توصية المنتجات بالخوارزميات الجينية
+### Test Store for the Product Recommendation System with Genetic Algorithms (Decision Tree + GA Hybrid)
 
 A working e-commerce store whose "Recommended for you" engine combines a **Decision Tree** (predicts each user's preferred category) with a **Genetic Algorithm** (optimizes the recommendation list) — built for BIA601 · SVU · Spring 2025.
 

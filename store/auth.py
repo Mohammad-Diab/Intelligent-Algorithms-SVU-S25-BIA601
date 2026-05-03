@@ -29,7 +29,7 @@ def load_logged_in_user():
     ).fetchone()
 
 
-PUBLIC_ENDPOINTS = {"auth.login", "auth.logout", "static"}
+PUBLIC_ENDPOINTS = {"home", "auth.login", "auth.logout", "static"}
 
 
 def require_login_globally():

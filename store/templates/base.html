@@ -3,16 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}نظام توصية المنتجات بالخوارزميات الجينية{% endblock %}</title>
+  <title>{% block title %}متجر لاختبار نظام توصية المنتجات بالخوارزميات الجينية{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <header class="topbar">
-    <a href="{{ url_for('home') }}" class="brand">نظام توصية المنتجات<span class="brand-sub">بالخوارزميات الجينية · BIA601</span></a>
+    <a href="{{ url_for('home') }}" class="brand">متجر لاختبار نظام التوصية</a>
     <nav>
-      <a href="{{ url_for('products.list_products') }}">المنتجات</a>
-      <a href="{{ url_for('cart.view_cart') }}">العربة</a>
-      <a href="https://bia601-ga-sandbox.onrender.com" target="_blank" rel="noopener" title="النموذج التجريبي للخوارزمية الجينية">النموذج التجريبي ↗</a>
+      {% if g.user %}
+        <a href="{{ url_for('products.list_products') }}">المنتجات</a>
+        <a href="{{ url_for('cart.view_cart') }}">العربة</a>
+      {% endif %}
+      <a href="https://bia601-ga-sandbox.onrender.com" title="النموذج التجريبي للخوارزمية الجينية">النموذج التجريبي</a>
       {% if g.user %}
         <span class="greet">مرحباً، {{ g.user['username'] }}</span>
         <a href="{{ url_for('auth.logout') }}">تسجيل الخروج</a>
