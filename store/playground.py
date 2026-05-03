@@ -6,7 +6,7 @@ from auth import login_required
 import ga
 
 
-bp = Blueprint("sandbox", __name__, url_prefix="/sandbox")
+bp = Blueprint("playground", __name__, url_prefix="/playground")
 
 DEFAULTS = {"pop_size": 80, "generations": 120, "mutation_rate": 0.05}
 
@@ -75,7 +75,7 @@ def _parse_params():
 @bp.route("/")
 @login_required
 def index():
-    return render_template("sandbox/index.html")
+    return render_template("playground/index.html")
 
 
 @bp.route("/api/users")

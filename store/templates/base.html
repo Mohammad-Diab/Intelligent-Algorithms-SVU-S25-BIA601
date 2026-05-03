@@ -21,7 +21,7 @@
     'products.detail': 'تفاصيل المنتج',
     'cart.view_cart': 'العربة',
     'cart.order_confirmation': 'تأكيد الطلب',
-    'sandbox.index': 'النموذج التجريبي',
+    'playground.index': 'النموذج التجريبي',
     'auth.login': 'تسجيل الدخول',
   }.get(ep, '') %}
 
@@ -93,7 +93,7 @@
           <a href="{{ url_for('cart.view_cart') }}" class="side-link {{ 'active' if ep.startswith('cart.') else '' }}">
             <span class="side-icon"><i class="fas fa-shopping-cart"></i></span> العربة
           </a>
-          <a href="{{ url_for('sandbox.index') }}" class="side-link {{ 'active' if ep.startswith('sandbox.') else '' }}">
+          <a href="{{ url_for('playground.index') }}" class="side-link {{ 'active' if ep.startswith('playground.') else '' }}">
             <span class="side-icon"><i class="fas fa-flask"></i></span> النموذج التجريبي
           </a>
         </nav>

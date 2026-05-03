@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}النموذج التجريبي · الخوارزمية الجينية{% endblock %}
 {% block extra_css %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='sandbox/style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='playground/style.css') }}">
   <style>
     body { background: linear-gradient(135deg, #e0f7fa 0%, #f3e5f5 50%, #fce4ec 100%) !important; color: #333 !important; }
     .control-panel, .advanced { background: rgba(255,255,255,0.5) !important; border-color: rgba(255,255,255,0.8) !important; backdrop-filter: blur(12px); }
@@ -121,5 +121,5 @@
 <section id="user-info" class="user-info hidden"></section>
 <section id="results" class="results"></section>
 
-<script src="{{ url_for('static', filename='sandbox/app.js') }}"></script>
+<script src="{{ url_for('static', filename='playground/app.js') }}"></script>
 {% endblock %}

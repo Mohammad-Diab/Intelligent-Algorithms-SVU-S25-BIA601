@@ -1,5 +1,5 @@
 services:
-  # Single deployment: full store + DT/GA hybrid recommender + GA sandbox at /sandbox
+  # Single deployment: full store + DT/GA hybrid recommender + GA playground at /playground
   - type: web
     name: bia601-recommender
     runtime: python

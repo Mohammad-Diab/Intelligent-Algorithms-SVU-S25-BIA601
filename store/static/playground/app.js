@@ -27,7 +27,7 @@
   async function loadUsers() {
     setStatus("جاري تحميل قائمة المستخدمين...", "loading");
     try {
-      const res = await fetch("/sandbox/api/users");
+      const res = await fetch("/playground/api/users");
       if (!res.ok) throw new Error("فشل تحميل المستخدمين");
       users = await res.json();
       users.forEach(u => {
@@ -110,7 +110,7 @@
     }
 
     try {
-      const res = await fetch(`/sandbox/api/recommend/${userId}?${params}`);
+      const res = await fetch(`/playground/api/recommend/${userId}?${params}`);
       if (!res.ok) throw new Error("فشل توليد التوصيات");
       const data = await res.json();
       const user = users.find(u => u.user_id === data.user_id);

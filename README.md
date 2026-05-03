@@ -60,7 +60,7 @@ To run the standalone GA sandbox instead, see [test_algo/README.md](test_algo/RE
 ## Live Demo
 
 - **Hosted store:** https://bia601-recommender.onrender.com
-- **GA-only sandbox:** same site, `/sandbox` route (also reachable from the topbar link "النموذج التجريبي")
+- **GA-only playground:** same site, `/playground` route (also reachable from the sidebar link "النموذج التجريبي")
 - **3-minute demo video:** _[paste link after recording]_
 
 > Hosted on Render free tier — first request after idle may take ~30s to wake up.
