@@ -70,13 +70,13 @@ To run the standalone GA sandbox instead, see [test_algo/README.md](test_algo/RE
 Customer behavioural content recommendation system using decision tree and genetic algorithm for online shopping websites (2024).
 DOI: 10.31893/multiscience.2025003 · https://malque.pub/ojs/index.php/msj/article/view/3865
 
-## Developer
+## Developers
 
-Mohammad Diab
+- Mohammad Diab
+- Sami Alkhouja
 
 ## Contributors
 
-- Sami Alkhouja
 - Haidra Dalalah (Haidra_155085, C2)
 - [Add remaining team members]
 
