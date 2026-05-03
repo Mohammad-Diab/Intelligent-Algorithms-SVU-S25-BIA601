@@ -10,10 +10,10 @@ W_PURCHASED = 0.15
 
 
 def load_raw():
-    users = pd.read_csv(DATA_DIR / "users.csv")
-    products = pd.read_csv(DATA_DIR / "products.csv")
-    ratings = pd.read_csv(DATA_DIR / "ratings.csv")
-    behavior = pd.read_csv(DATA_DIR / "behavior_15500.csv")
+    users = pd.read_excel(DATA_DIR / "users.xlsx")
+    products = pd.read_excel(DATA_DIR / "products.xlsx")
+    ratings = pd.read_excel(DATA_DIR / "ratings.xlsx")
+    behavior = pd.read_excel(DATA_DIR / "behavior_15500.xlsx")
     return users, products, ratings, behavior
 
 
