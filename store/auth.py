@@ -29,6 +29,17 @@ def load_logged_in_user():
     ).fetchone()
 
 
+PUBLIC_ENDPOINTS = {"auth.login", "auth.logout", "static"}
+
+
+def require_login_globally():
+    if g.user is not None:
+        return
+    if request.endpoint in PUBLIC_ENDPOINTS:
+        return
+    return redirect(url_for("auth.login", next=request.path))
+
+
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":

@@ -37,6 +37,7 @@ def create_app():
     app.register_blueprint(reviews.bp)
     app.register_blueprint(cart.bp)
     app.before_request(auth.load_logged_in_user)
+    app.before_request(auth.require_login_globally)
 
     @app.route("/")
     def home():
