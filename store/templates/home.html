@@ -30,15 +30,17 @@
     <span class="inline-block text-xs font-bold tracking-widest text-gray-500 uppercase">إعداد الطلاب</span>
   </div>
   {% set students = [
-    ('محمد دياب',     'mohammad_173125', 'C2'),
     ('سامي الخوجة',   'sami_xxxxxx',     'C?'),
+    ('محمد دياب',     'mohammad_173125', 'C2'),
     ('حيدرة دلالة',   'Haidra_155085',   'C2'),
     ('اسم الطالب 4',  'name_xxxxxx',     'C?'),
     ('اسم الطالب 5',  'name_xxxxxx',     'C?'),
   ] %}
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
     {% for name, sid, cls in students %}
-    <span class="inline-flex items-center gap-2 bg-white/60 border border-white/80 rounded-full px-4 py-2 text-sm shadow-sm w-full justify-center">
+    {% set is_lead = (name == 'محمد دياب') %}
+    <span class="inline-flex items-center gap-2 bg-white/60 border border-white/80 rounded-full px-4 py-2 shadow-sm w-full justify-center
+                 {{ 'text-[15px]' if is_lead else 'text-sm' }}">
       <span class="text-purple-600 font-bold">{{ name }}</span>
       <span class="text-gray-400">·</span>
       <span class="text-gray-700 font-semibold font-en">{{ sid }}</span>
