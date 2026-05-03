@@ -41,6 +41,19 @@ def create_app():
     app.before_request(auth.load_logged_in_user)
     app.before_request(auth.require_login_globally)
 
+    _CAT_SLUG = {
+        "ألعاب": "toys", "أجهزة منزلية": "home-appliances",
+        "إلكترونيات": "electronics", "كتب": "books",
+        "ملابس": "clothes", "رياضة": "sports", "عطور": "perfumes",
+    }
+
+    @app.template_filter("product_fallback")
+    def product_fallback(p):
+        cat = p["category"] if hasattr(p, "keys") and "category" in p.keys() else None
+        pid = p["product_id"] if hasattr(p, "keys") and "product_id" in p.keys() else 0
+        slug = _CAT_SLUG.get(cat, "toys")
+        return f"/static/img/products/{slug}/{pid % 5}.svg"
+
     @app.context_processor
     def inject_cart_count():
         if g.get("user"):

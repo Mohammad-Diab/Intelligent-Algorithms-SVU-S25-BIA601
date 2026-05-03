@@ -38,108 +38,6 @@ CATEGORY_SLUG = {
     "Perfumes": "perfumes",
 }
 
-PRODUCT_VARIANTS = {
-    "Toys": [
-        ("قطار خشبي", "wooden train toy"),
-        ("سيارة سباق تحكم", "rc race car toy"),
-        ("دبدوب قطني", "teddy bear plush"),
-        ("مكعب روبيك", "rubiks cube"),
-        ("مكعبات بناء", "building blocks toy"),
-        ("شخصية أكشن", "action figure"),
-        ("لعبة طاولة", "board game"),
-        ("درون مصغر", "mini drone"),
-        ("أحجية 1000 قطعة", "jigsaw puzzle"),
-        ("بيت دمى", "doll house"),
-        ("روبوت لعبة", "toy robot"),
-        ("مجموعة سحر", "magic kit toy"),
-    ],
-    "Home Appliances": [
-        ("صانعة قهوة فاخرة", "coffee maker"),
-        ("مكنسة كهربائية", "vacuum cleaner"),
-        ("قلاية هوائية", "air fryer"),
-        ("خلاط كهربائي", "kitchen blender"),
-        ("محمصة خبز", "kitchen toaster"),
-        ("ميكروويف", "microwave oven"),
-        ("مكواة بخار", "steam iron"),
-        ("غلاية كهربائية", "electric kettle"),
-        ("طباخ أرز", "rice cooker"),
-        ("خلاط مع حامل", "stand mixer"),
-        ("طباخ بطيء", "slow cooker"),
-        ("غسالة صحون", "dishwasher"),
-    ],
-    "Electronics": [
-        ("سماعة بلوتوث", "bluetooth speaker"),
-        ("سماعات لاسلكية", "wireless earbuds"),
-        ("ساعة ذكية", "smartwatch"),
-        ("موزع USB-C", "usb hub"),
-        ("بنك طاقة", "power bank"),
-        ("كاميرا ويب", "webcam"),
-        ("لوحة مفاتيح ميكانيكية", "mechanical keyboard"),
-        ("ماوس ألعاب", "gaming mouse"),
-        ("شاشة كمبيوتر", "computer monitor"),
-        ("قرص SSD خارجي", "external ssd drive"),
-        ("راوتر واي فاي", "wifi router"),
-        ("قابس ذكي", "smart plug"),
-    ],
-    "Books": [
-        ("رواية غموض", "mystery book"),
-        ("كتاب طبخ", "cookbook"),
-        ("كتاب تاريخ", "history book"),
-        ("دليل تطوير الذات", "self help book"),
-        ("خيال علمي", "science fiction book"),
-        ("دليل البرمجة", "programming book"),
-        ("ديوان شعر", "poetry book"),
-        ("سيرة ذاتية", "biography book"),
-        ("دليل سفر", "travel book"),
-        ("قصص أطفال", "children book"),
-        ("ألبوم تصوير", "photography book"),
-        ("كتاب فلسفة", "philosophy book"),
-    ],
-    "Clothes": [
-        ("تيشيرت قطني", "cotton tshirt"),
-        ("جينز", "jeans"),
-        ("كنزة صوف", "wool sweater"),
-        ("قميص كتان", "linen shirt"),
-        ("هودي", "hoodie"),
-        ("فستان صيفي", "summer dress"),
-        ("جاكيت جلد", "leather jacket"),
-        ("بولو شيرت", "polo shirt"),
-        ("شورت", "shorts clothing"),
-        ("تنورة", "skirt clothing"),
-        ("معطف", "trench coat"),
-        ("كارديغان", "cardigan sweater"),
-    ],
-    "Sports": [
-        ("سجادة يوغا", "yoga mat"),
-        ("دمبل", "dumbbells"),
-        ("كرة قدم", "soccer ball"),
-        ("مضرب تنس", "tennis racket"),
-        ("خوذة دراجة", "bicycle helmet"),
-        ("حذاء جري", "running shoes"),
-        ("أحزمة مقاومة", "resistance bands"),
-        ("حبل قفز", "jump rope"),
-        ("قفازات ملاكمة", "boxing gloves"),
-        ("نظارة سباحة", "swim goggles"),
-        ("حقيبة تسلق", "hiking backpack"),
-        ("أسطوانة تدليك", "foam roller"),
-    ],
-    "Perfumes": [
-        ("عود ملكي", "oud perfume"),
-        ("عطر ورد", "rose perfume"),
-        ("عطر صندل", "sandalwood perfume"),
-        ("عطر ياسمين", "jasmine perfume"),
-        ("عطر عنبر", "amber perfume"),
-        ("عطر حمضيات", "citrus perfume"),
-        ("عطر فانيلا", "vanilla perfume"),
-        ("كولونيا", "cologne bottle"),
-        ("عطر باتشولي", "patchouli perfume"),
-        ("عطر أرز", "cedar perfume"),
-        ("عطر خزامى", "lavender perfume"),
-        ("عطر زعفران", "saffron perfume"),
-    ],
-}
-
-
 REVIEW_TEMPLATES = {
     5: [
         "منتج ممتاز جداً، أنصح به بشدة!",
@@ -184,19 +82,53 @@ def _user_full_name(uid):
     return f"مستخدم {uid}"
 
 
-def _product_info(category, pid):
-    pool = PRODUCT_VARIANTS.get(category)
-    if not pool:
-        cat_ar = CATEGORY_AR.get(category, category)
-        return f"#{pid} {cat_ar}", category.lower()
-    name_ar, kw = pool[(pid - 1) % len(pool)]
-    return f"#{pid} {name_ar}", kw
+def _product_info(category_en, pid):
+    """Build the product display name. Prefers data/product_images.csv;
+    falls back to '<Arabic category> #<id>' if a row is missing."""
+    csv_name = (_load_product_overrides().get(pid, {}).get("name_ar") or "").strip()
+    if csv_name:
+        return f"#{pid} {csv_name}"
+    return f"#{pid} {CATEGORY_AR.get(category_en, category_en)}"
+
+
+_PRODUCT_OVERRIDES = None
+
+
+def _load_product_overrides():
+    """Load per-product overrides from data/product_images.csv:
+       { pid: {"name_ar": ..., "image_url": ...} }
+    URLs in the CSV are expected to be the final resolved CDN URLs.
+    Run seed/resolve_image_urls.py after replacing the CSV to re-resolve."""
+    global _PRODUCT_OVERRIDES
+    if _PRODUCT_OVERRIDES is not None:
+        return _PRODUCT_OVERRIDES
+
+    out = {}
+    csv_path = os.path.join(DATA_DIR, "product_images.csv")
+    if os.path.exists(csv_path):
+        import csv
+        with open(csv_path, "r", encoding="utf-8-sig") as f:
+            for row in csv.DictReader(f):
+                try:
+                    pid = int(row["id"])
+                except (KeyError, ValueError):
+                    continue
+                name_ar = (row.get("name") or "").strip()
+                url = (row.get("image_url") or "").strip().replace("/800/600/", "/400/300/")
+                out[pid] = {"name_ar": name_ar, "image_url": url}
+
+    _PRODUCT_OVERRIDES = out
+    return out
 
 
 def _image_url(category_en, pid):
+    """Return the product image URL. Prefers data/product_images.csv;
+    falls back to local category SVG (5 per category, picked by pid % 5)."""
+    url = _load_product_overrides().get(pid, {}).get("image_url")
+    if url:
+        return url
     slug = CATEGORY_SLUG.get(category_en, "toys")
-    variant = pid % 5
-    return f"/static/img/products/{slug}/{variant}.svg"
+    return f"/static/img/products/{slug}/{pid % 5}.svg"
 
 
 def _wipe(conn):
@@ -233,7 +165,7 @@ def seed_products(conn):
         pid = int(r.product_id)
         cat_en = str(r.category)
         cat_ar = CATEGORY_AR.get(cat_en, cat_en)
-        name_ar, kw = _product_info(cat_en, pid)
+        name_ar = _product_info(cat_en, pid)
         rows.append((
             pid,
             name_ar,

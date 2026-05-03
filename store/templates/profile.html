@@ -50,7 +50,7 @@
                 <span class="font-bold text-purple-600">{{ pct }}%</span>
               </div>
               <div class="w-full bg-gray-200 rounded-full h-2">
-                <div class="bg-gradient-to-r {{ bar_colors[loop.index0 % bar_colors|length] }} h-2 rounded-full" style="width:{{ pct }}%"></div>
+                <div class="bar bg-gradient-to-r {{ bar_colors[loop.index0 % bar_colors|length] }} h-2 rounded-full" data-w="{{ pct }}"></div>
               </div>
             </div>
             {% endif %}
@@ -125,7 +125,7 @@
           <div class="relative rounded-2xl overflow-hidden mb-3 aspect-[4/3] bg-white/40">
             <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy"
                  class="w-full h-full object-cover transition duration-500 group-hover:scale-105"
-                 onerror="this.onerror=null;this.src='https://placehold.co/400x300/f3e5f5/6b21a8?text=%23{{ p['product_id'] }}';">
+                 onerror="this.onerror=null;this.src='{{ p|product_fallback }}';">
             <div class="absolute top-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-xl text-xs font-bold shadow flex items-center gap-2">
               <span class="relative flex h-2.5 w-2.5">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-{{ color }}-400 opacity-75"></span>
@@ -159,4 +159,7 @@
   </div>
 </div>
 
+<script>
+  document.querySelectorAll('.bar[data-w]').forEach(el => { el.style.width = el.dataset.w + '%'; });
+</script>
 {% endblock %}

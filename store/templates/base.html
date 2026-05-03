@@ -30,16 +30,18 @@
     </a>
     <nav class="flex items-center gap-3 text-sm flex-shrink-0">
       {% if g.user %}
-      <a href="{{ url_for('cart.view_cart') }}" class="cart-chip relative" title="العربة">
-        <i class="fas fa-shopping-cart"></i>
-        {% if cart_count > 0 %}
-          <span class="cart-badge">{{ cart_count }}</span>
-        {% endif %}
-      </a>
       <span class="flex items-center gap-2 text-sm text-gray-700">
         <i class="fas fa-user-circle text-purple-500 text-3xl"></i>
         <span>مرحباً، <strong class="text-gray-900">{{ g.user['full_name'] }}</strong></span>
       </span>
+
+      <a href="{{ url_for('cart.view_cart') }}" class="cart-chip relative" title="العربة">
+        <i class="fas fa-shopping-cart"></i>
+        {% if cart_count > 0 %}
+        <span class="cart-badge">{{ cart_count }}</span>
+        {% endif %}
+      </a>
+      
       <a href="{{ url_for('auth.logout') }}" class="logout-chip" title="تسجيل الخروج">
         <i class="fas fa-sign-out-alt"></i> <span class="hidden sm:inline">خروج</span>
       </a>

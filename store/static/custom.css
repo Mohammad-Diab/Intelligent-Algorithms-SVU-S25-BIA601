@@ -106,15 +106,7 @@ body {
 }
 
 /* Smooth Image Loading */
-img {
-  transition: opacity 0.3s ease;
-}
-img[loading] {
-  opacity: 0;
-}
-img.loaded {
-  opacity: 1;
-}
+img { transition: opacity 0.3s ease; }
 
 /* Text Gradients */
 .text-gradient {
