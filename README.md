@@ -77,6 +77,7 @@ Mohammad Diab
 ## Contributors
 
 - Sami Alkhouja
+- Haidra Dalalah (Haidra_155085, C2)
 - [Add remaining team members]
 
 ## License
