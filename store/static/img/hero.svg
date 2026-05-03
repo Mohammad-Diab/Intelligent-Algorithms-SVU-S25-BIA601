@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#fbcfe8"/>
+      <stop offset="50%" stop-color="#e9d5ff"/>
+      <stop offset="100%" stop-color="#bfdbfe"/>
+    </linearGradient>
+    <linearGradient id="strand" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+    <linearGradient id="bagGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"  stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#7e22ce"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+  </defs>
+
+  <!-- Soft gradient base -->
+  <rect width="600" height="600" fill="url(#bg)"/>
+
+  <!-- Decorative blur blobs -->
+  <circle cx="120" cy="100" r="120" fill="#f9a8d4" opacity="0.55" filter="url(#soft)"/>
+  <circle cx="500" cy="500" r="140" fill="#c4b5fd" opacity="0.55" filter="url(#soft)"/>
+
+  <!-- DNA helix (genetic algorithm metaphor) -->
+  <g stroke="url(#strand)" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.85">
+    <path d="M150 90 Q 350 180 150 270 Q 350 360 150 450 Q 350 540 150 600"/>
+    <path d="M450 90 Q 250 180 450 270 Q 250 360 450 450 Q 250 540 450 600"/>
+  </g>
+  <!-- DNA rungs -->
+  <g stroke="url(#strand)" stroke-width="3" opacity="0.55">
+    <line x1="200" y1="135" x2="400" y2="135"/>
+    <line x1="265" y1="180" x2="335" y2="180"/>
+    <line x1="200" y1="225" x2="400" y2="225"/>
+    <line x1="265" y1="270" x2="335" y2="270"/>
+    <line x1="200" y1="315" x2="400" y2="315"/>
+    <line x1="265" y1="360" x2="335" y2="360"/>
+    <line x1="200" y1="405" x2="400" y2="405"/>
+    <line x1="265" y1="450" x2="335" y2="450"/>
+    <line x1="200" y1="495" x2="400" y2="495"/>
+  </g>
+  <!-- DNA nucleotide circles -->
+  <g fill="#a855f7">
+    <circle cx="200" cy="135" r="8"/>
+    <circle cx="400" cy="135" r="8"/>
+    <circle cx="200" cy="225" r="8"/>
+    <circle cx="400" cy="225" r="8"/>
+    <circle cx="200" cy="315" r="8"/>
+    <circle cx="400" cy="315" r="8"/>
+    <circle cx="200" cy="405" r="8"/>
+    <circle cx="400" cy="405" r="8"/>
+    <circle cx="200" cy="495" r="8"/>
+    <circle cx="400" cy="495" r="8"/>
+  </g>
+  <g fill="#ec4899">
+    <circle cx="265" cy="180" r="6"/>
+    <circle cx="335" cy="180" r="6"/>
+    <circle cx="265" cy="270" r="6"/>
+    <circle cx="335" cy="270" r="6"/>
+    <circle cx="265" cy="360" r="6"/>
+    <circle cx="335" cy="360" r="6"/>
+    <circle cx="265" cy="450" r="6"/>
+    <circle cx="335" cy="450" r="6"/>
+  </g>
+
+  <!-- Shopping bag (centerpiece) -->
+  <g transform="translate(225, 220)">
+    <rect x="0" y="40" width="150" height="160" rx="20" fill="url(#bagGrad)" opacity="0.95"/>
+    <!-- handles -->
+    <path d="M40 50 V 25 a 35 35 0 0 1 70 0 V 50" stroke="#7e22ce" stroke-width="9" fill="none" stroke-linecap="round"/>
+    <!-- highlight -->
+    <rect x="12" y="55" width="40" height="120" rx="10" fill="#fff" opacity="0.18"/>
+    <!-- star icon on bag -->
+    <g transform="translate(75, 130)" fill="#fde68a">
+      <path d="M0,-22 L6,-7 L22,-7 L9,3 L14,18 L0,9 L-14,18 L-9,3 L-22,-7 L-6,-7 Z"/>
+    </g>
+  </g>
+
+  <!-- Floating shopping cart icon -->
+  <g transform="translate(420, 130)" opacity="0.95">
+    <circle cx="0" cy="0" r="32" fill="#fff" opacity="0.85"/>
+    <g transform="translate(-13, -13)" fill="#a855f7">
+      <path d="M2 4 L7 4 L9 18 L24 18 L27 8 L11 8" stroke="#a855f7" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="11" cy="23" r="2.5"/>
+      <circle cx="22" cy="23" r="2.5"/>
+    </g>
+  </g>
+
+  <!-- Floating heart icon -->
+  <g transform="translate(170, 470)" opacity="0.95">
+    <circle cx="0" cy="0" r="28" fill="#fff" opacity="0.85"/>
+    <path d="M0,8 C -10,-2 -16,-12 -8,-16 C -4,-18 0,-14 0,-10 C 0,-14 4,-18 8,-16 C 16,-12 10,-2 0,8 Z" fill="#ec4899"/>
+  </g>
+
+  <!-- Floating spark -->
+  <g transform="translate(470, 360)" opacity="0.9">
+    <circle cx="0" cy="0" r="24" fill="#fff" opacity="0.85"/>
+    <g fill="#facc15">
+      <path d="M0,-14 L3,-3 L14,0 L3,3 L0,14 L-3,3 L-14,0 L-3,-3 Z"/>
+    </g>
+  </g>
+</svg>

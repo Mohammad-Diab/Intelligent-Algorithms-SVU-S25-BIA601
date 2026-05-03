@@ -455,7 +455,7 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .algo-card .score-value { color: var(--success); font-weight: 700; }
 
-.hidden { display: none !important; }
+#status.hidden, #user-info.hidden { display: none !important; }
 
 footer {
   text-align: center;

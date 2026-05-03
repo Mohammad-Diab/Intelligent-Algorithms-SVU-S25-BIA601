@@ -44,12 +44,22 @@ def create_app():
     @app.route("/")
     def home():
         recs = None
+        trending = []
         if g.user:
             try:
                 recs = recommender.recommend(g.user["user_id"], top_n=10, ga_seed=42)
             except Exception:
                 recs = None
-        return render_template("home.html", recs=recs)
+            trending = db.get_db().execute(
+                "SELECT p.product_id, p.name, p.category, p.price, p.image_url, "
+                "       COUNT(b.id) AS purchases "
+                "FROM products p "
+                "JOIN behavior b ON b.product_id = p.product_id AND b.event = 'purchased' "
+                "GROUP BY p.product_id "
+                "ORDER BY purchases DESC, p.product_id "
+                "LIMIT 4"
+            ).fetchall()
+        return render_template("home.html", recs=recs, trending=trending)
 
     return app
 

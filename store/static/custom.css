@@ -272,6 +272,16 @@ img.loaded {
 .product-card { transition: transform 0.2s, box-shadow 0.2s; }
 .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(168,85,247,0.15); }
 
+/* Hide scrollbar (still scrollable) */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Drag-to-scroll for horizontal carousels */
+#recs-scroll { cursor: grab; -webkit-user-select: none; user-select: none; }
+#recs-scroll img { -webkit-user-drag: none; user-select: none; pointer-events: none; }
+#recs-scroll.dragging { cursor: grabbing; scroll-behavior: auto; }
+#recs-scroll.dragging * { pointer-events: none; }
+
 /* Helper: bg gradient brand */
 .btn-brand {
   background: linear-gradient(135deg, #a855f7, #ec4899);

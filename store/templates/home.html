@@ -1,48 +1,95 @@
 {% extends "base.html" %}
 {% block content %}
 
-{% if not g.user %}
-<!-- SVU cover (only shown when logged out, as a landing) -->
-<section class="glass-card max-w-5xl mx-auto p-6 md:p-10 mb-8" data-aos="fade-up">
-  <div class="flex flex-col md:flex-row gap-6 items-start mb-6">
-    <img class="w-28 h-auto" src="{{ url_for('static', filename='img/svu-logo.webp') }}" alt="SVU Logo">
-    <div class="flex-1">
+<!-- SVU cover (always visible — university / project / team) -->
+<section class="glass-card p-6 md:p-10 mb-8" data-aos="fade-up">
+  <div class="flex flex-col md:flex-row md:flex-row-reverse gap-12 items-center mb-6 justify-between">
+    <img class="w-32 h-auto flex-shrink-0" src="{{ url_for('static', filename='img/svu-logo.webp') }}" alt="SVU Logo">
+    <div class="flex-1 text-right">
       <div class="text-xl font-bold text-gray-800">الجامعة الافتراضية السورية</div>
       <div class="text-gray-500">كلية الهندسة المعلوماتية</div>
-      <div class="mt-1 text-sm text-purple-600 font-semibold">الفصل S25 · الخوارزميات الذكية BIA601</div>
+      <div class="mt-2 text-sm text-purple-600 font-semibold">الفصل S25</div>
+      <div class="text-sm text-purple-600 font-semibold">الخوارزميات الذكية · BIA601</div>
     </div>
   </div>
-  <h1 class="text-2xl md:text-4xl font-bold text-gray-800 mb-3 leading-tight">
-    متجر لاختبار <span class="text-gradient">نظام توصية المنتجات</span> بالخوارزميات الجينية
-  </h1>
-  <div class="inline-flex items-center gap-2 bg-white/60 border border-white/80 rounded-lg px-3 py-1 mb-5 text-sm">
-    <span class="text-gray-500 text-xs">إشراف</span>
-    <span class="font-semibold text-gray-800">د. عصام محمد سلمان</span>
-  </div>
-  <div class="flex flex-wrap gap-2 mb-6">
-    <span class="bg-white/60 border border-white/80 rounded-full px-3 py-1 text-xs font-semibold text-gray-700"><span class="text-purple-600">محمد دياب</span> · mohammad_173125 · C2</span>
-    <span class="bg-white/60 border border-white/80 rounded-full px-3 py-1 text-xs font-semibold text-gray-700"><span class="text-purple-600">سامي الخوجة</span> · sami_xxxxxx · C?</span>
-    <span class="bg-white/60 border border-white/80 rounded-full px-3 py-1 text-xs font-semibold text-gray-700"><span class="text-purple-600">حيدرة دلالة</span> · Haidra_155085 · C2</span>
-    <span class="bg-white/60 border border-white/80 rounded-full px-3 py-1 text-xs font-semibold text-gray-700">اسم الطالب 4</span>
-    <span class="bg-white/60 border border-white/80 rounded-full px-3 py-1 text-xs font-semibold text-gray-700">اسم الطالب 5</span>
-  </div>
-  <a href="{{ url_for('auth.login') }}" class="btn-brand text-base px-8 py-3">سجّل الدخول لرؤية توصياتك</a>
-</section>
-{% endif %}
-
-<!-- Hero (logged-in greeting) -->
-{% if g.user %}
-<section class="glass-card p-6 md:p-10 mb-8 relative overflow-hidden" data-aos="fade-up">
-  <div class="absolute top-0 left-0 w-64 h-64 bg-pink-300 rounded-full blur-3xl opacity-30 -translate-y-1/2 -translate-x-1/3"></div>
-  <div class="absolute bottom-0 right-0 w-48 h-48 bg-purple-300 rounded-full blur-3xl opacity-30 translate-y-1/3 translate-x-1/4"></div>
-  <div class="relative">
-    <span class="inline-block py-1 px-3 rounded-full bg-purple-100 text-purple-600 text-xs font-bold mb-3 tracking-wider">DT + GA HYBRID</span>
-    <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3 leading-tight">
-      أهلاً <span class="text-gradient">{{ g.user['full_name'] }}</span>
+  <div class="text-center my-8">
+    <div class="font-en font-extrabold text-4xl md:text-6xl tracking-tight mb-3">
+      <span class="text-gray-900">Homs</span><span class="text-purple-600">Store</span>
+    </div>
+    <h1 class="text-lg md:text-2xl font-bold text-gray-800 leading-relaxed">
+      متجر لاختبار نظام توصية المنتجات بالخوارزميات الجينية
     </h1>
-    <p class="text-gray-600 max-w-xl">
-      التوصيات أدناه تُحدَّث تلقائياً مع كل تفاعل (مشاهدة · نقر · إضافة للعربة · شراء · تقييم). الكاش لمدة 30 ثانية.
+  </div>
+  <div class="text-center mb-6">
+    <div class="inline-flex items-center gap-3 bg-white/60 border border-white/80 rounded-xl px-5 py-2.5 text-base shadow-sm">
+      <span class="text-gray-500 text-sm">إشراف</span>
+      <span class="font-bold text-gray-900 text-lg">د. عصام محمد سلمان</span>
+    </div>
+  </div>
+  <div class="text-center mb-3">
+    <span class="inline-block text-xs font-bold tracking-widest text-gray-500 uppercase">إعداد الطلاب</span>
+  </div>
+  {% set students = [
+    ('محمد دياب',     'mohammad_173125', 'C2'),
+    ('سامي الخوجة',   'sami_xxxxxx',     'C?'),
+    ('حيدرة دلالة',   'Haidra_155085',   'C2'),
+    ('اسم الطالب 4',  'name_xxxxxx',     'C?'),
+    ('اسم الطالب 5',  'name_xxxxxx',     'C?'),
+  ] %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
+    {% for name, sid, cls in students %}
+    <span class="inline-flex items-center gap-2 bg-white/60 border border-white/80 rounded-full px-4 py-2 text-sm shadow-sm w-full justify-center">
+      <span class="text-purple-600 font-bold">{{ name }}</span>
+      <span class="text-gray-400">·</span>
+      <span class="text-gray-700 font-semibold font-en">{{ sid }}</span>
+      <span class="text-gray-400">·</span>
+      <span class="text-purple-700 font-bold font-en text-xs bg-purple-100 px-2 py-0.5 rounded-md">{{ cls }}</span>
+    </span>
+    {% endfor %}
+  </div>
+  {% if not g.user %}
+  <div class="mt-6">
+    <a href="{{ url_for('auth.login') }}" class="btn-brand text-base px-8 py-3">سجّل الدخول لرؤية توصياتك</a>
+  </div>
+  {% endif %}
+</section>
+
+<!-- Hero (logged-in: rich two-column with image) -->
+{% if g.user %}
+<section class="glass-card p-8 md:p-12 mb-8 flex flex-col md:flex-row items-center justify-between relative overflow-hidden gap-8" data-aos="fade-up">
+  <!-- Decorative blur blobs -->
+  <div class="absolute top-0 right-0 w-64 h-64 bg-pink-300 rounded-full blur-3xl opacity-40 -translate-y-1/2 translate-x-1/3"></div>
+  <div class="absolute bottom-0 left-0 w-48 h-48 bg-purple-300 rounded-full blur-3xl opacity-40 translate-y-1/3 -translate-x-1/4"></div>
+
+  <!-- Text -->
+  <div class="relative z-10 md:w-1/2">
+    <span class="inline-block py-1 px-3 rounded-full bg-purple-100 text-purple-600 text-sm font-bold mb-4 tracking-wider">تشكيلة جديدة</span>
+    <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-5 leading-tight">
+      اكتشف ما<br>
+      <span class="text-gradient">يناسب ذوقك</span>
+    </h1>
+    <p class="text-gray-600 mb-6 max-w-md text-base md:text-lg leading-relaxed">
+      توصيات ذكية مدعومة بـ <strong class="text-gray-800">شجرة القرار + الخوارزمية الجينية</strong> مصمَّمة خصيصاً لذوقك ونشاطك.
     </p>
+    <div class="flex flex-wrap gap-3">
+      <a href="{{ url_for('products.list_products') }}" class="bg-gray-900 text-white px-7 py-3 rounded-full font-bold hover:bg-gray-800 transition shadow-lg hover:shadow-xl hover:-translate-y-0.5 inline-block">تسوّق الآن</a>
+      <a href="{{ url_for('playground.index') }}" class="glass-button px-7 py-3 text-gray-800 font-bold inline-block">اكتشف الخوارزمية</a>
+    </div>
+  </div>
+
+  <!-- Image with floating badge -->
+  <div class="relative z-10 md:w-1/2 flex justify-center">
+    <div class="w-full max-w-md aspect-square rounded-[40px] overflow-hidden glass relative p-3 floating">
+      <img src="{{ url_for('static', filename='img/hero.svg') }}" alt="HomsStore" class="w-full h-full object-cover rounded-[32px] shadow-sm">
+      <!-- Top Rated badge -->
+      <div class="absolute top-6 left-3 glass-card p-3 flex items-center gap-2" style="animation: float 4s ease-in-out infinite">
+        <div class="w-9 h-9 rounded-full bg-yellow-100 text-yellow-500 flex items-center justify-center"><i class="fas fa-star"></i></div>
+        <div class="text-right" dir="rtl">
+          <p class="text-xs font-extrabold text-gray-800 leading-tight">الأعلى تقييماً</p>
+          <p class="text-[10px] text-gray-500 leading-tight">+2000 مراجعة</p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 {% endif %}
@@ -61,11 +108,15 @@
         {% endif %}
       </p>
     </div>
+    <div class="flex gap-2">
+      <button onclick="scrollRecs(-1)" class="w-10 h-10 rounded-full glass-button flex items-center justify-center text-gray-600 hover:text-purple-600" aria-label="السابق"><i class="fas fa-chevron-right"></i></button>
+      <button onclick="scrollRecs(1)" class="w-10 h-10 rounded-full glass-button flex items-center justify-center text-gray-600 hover:text-purple-600" aria-label="التالي"><i class="fas fa-chevron-left"></i></button>
+    </div>
   </div>
 
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+  <div id="recs-scroll" class="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
     {% for p in recs['products'] %}
-      <a href="{{ url_for('products.detail', product_id=p['product_id']) }}" class="glass-card product-card p-3 group relative">
+      <a href="{{ url_for('products.detail', product_id=p['product_id']) }}" class="glass-card product-card p-3 group relative flex-shrink-0 w-56">
         <span class="rank-badge">Gen {{ p['rank'] }}</span>
         <div class="relative rounded-2xl overflow-hidden mb-3 aspect-[4/3] bg-white/40">
           <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy"
@@ -82,8 +133,79 @@
     {% endfor %}
   </div>
 </section>
+<script>
+(function() {
+  const el = document.getElementById('recs-scroll');
+  if (!el) return;
+
+  // Arrow buttons
+  window.scrollRecs = function(dir) {
+    const step = (el.firstElementChild?.offsetWidth || 220) + 16;
+    el.scrollBy({left: -dir * step, behavior: 'smooth'});
+  };
+
+  // Drag-to-scroll
+  let isDown = false, startX = 0, startScroll = 0, moved = false;
+  el.addEventListener('mousedown', (e) => {
+    isDown = true; moved = false;
+    startX = e.pageX;
+    startScroll = el.scrollLeft;
+    el.classList.add('dragging');
+  });
+  ['mouseleave','mouseup'].forEach(evt => el.addEventListener(evt, () => {
+    if (isDown) el.classList.remove('dragging');
+    isDown = false;
+  }));
+  el.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    const dx = e.pageX - startX;
+    if (Math.abs(dx) > 5) moved = true;
+    el.scrollLeft = startScroll - dx;
+    e.preventDefault();
+  });
+  // Suppress click on cards if user dragged
+  el.addEventListener('click', (e) => {
+    if (moved) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+})();
+</script>
 {% elif g.user %}
 <p class="text-gray-500 text-center py-12">تصفّح وقيّم بعض المنتجات — ستظهر توصياتك المخصصة هنا.</p>
+{% endif %}
+
+{% if trending %}
+<section class="mt-12" data-aos="fade-up" data-aos-delay="200">
+  <div class="flex justify-between items-end mb-6 flex-wrap gap-3">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <i class="fas fa-fire text-pink-500"></i> الأكثر رواجاً
+      </h2>
+      <p class="text-sm text-gray-500 mt-1">المنتجات الأكثر شراءً عبر كل المستخدمين</p>
+    </div>
+    <a href="{{ url_for('products.list_products') }}" class="glass-button px-5 py-2 text-sm text-gray-700 font-semibold inline-flex items-center gap-2">
+      عرض الكل <i class="fas fa-arrow-left text-xs"></i>
+    </a>
+  </div>
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    {% for p in trending %}
+      <a href="{{ url_for('products.detail', product_id=p['product_id']) }}" class="glass-card product-card p-3 group relative">
+        <span class="absolute top-3 left-3 z-10 bg-pink-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full shadow-md flex items-center gap-1">
+          <i class="fas fa-fire"></i> {{ p['purchases'] }}
+        </span>
+        <div class="relative rounded-2xl overflow-hidden mb-3 aspect-[4/3] bg-white/40">
+          <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy"
+               class="w-full h-full object-cover transition duration-500 group-hover:scale-110"
+               onerror="this.onerror=null;this.src='https://placehold.co/400x300/fce4ec/be185d?text=%23{{ p['product_id'] }}';">
+        </div>
+        <h3 class="font-bold text-gray-800 text-sm line-clamp-2 mb-1">{{ p['name'] }}</h3>
+        <div class="flex items-center gap-1 mb-2">
+          <span class="pill pill-cat">{{ p['category'] }}</span>
+        </div>
+        <div class="font-bold text-gray-900 text-sm">{{ '%.2f'|format(p['price']) }} ل.س</div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
 {% endif %}
 
 {% endblock %}
