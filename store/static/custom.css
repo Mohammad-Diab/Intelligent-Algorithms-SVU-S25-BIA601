@@ -1,0 +1,190 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --color-soft-cyan: #e0f7fa;
+  --color-light-pink: #fce4ec;
+  --color-cream: #fffdd0;
+  --color-light-purple: #f3e5f5;
+  
+  --glass-bg: rgba(255, 255, 255, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: linear-gradient(135deg, var(--color-soft-cyan) 0%, var(--color-light-purple) 50%, var(--color-light-pink) 100%);
+  background-attachment: fixed;
+  color: #333;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: var(--glass-shadow);
+  border-radius: 24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.1);
+}
+
+.glass-button {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: scale(1.05);
+}
+
+/* Floating Animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.floating {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(200, 200, 200, 0.5);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 150, 150, 0.7);
+}
+
+/* Smooth Image Loading */
+img {
+  transition: opacity 0.3s ease;
+}
+img[loading] {
+  opacity: 0;
+}
+img.loaded {
+  opacity: 1;
+}
+
+/* Text Gradients */
+.text-gradient {
+  background: linear-gradient(to right, #8e2de2, #4a00e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Sidebar links */
+.side-link {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 12px;
+  color: #555; font-weight: 500; transition: all 0.2s;
+}
+.side-link:hover { background: rgba(255,255,255,0.6); color: #6b21a8; }
+.side-link.active {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(168,85,247,0.3);
+}
+.side-link.active i { color: #fff; }
+
+/* Flashes */
+.flash-error   { background: rgba(254,202,202,0.85); color: #991b1b; border: 1px solid rgba(248,113,113,0.5); border-radius: 12px; }
+.flash-success { background: rgba(187,247,208,0.85); color: #14532d; border: 1px solid rgba(74,222,128,0.5); border-radius: 12px; }
+
+/* Category pills (products page) */
+.category-pill {
+  flex-shrink: 0; padding: 8px 18px; border-radius: 999px;
+  border: 1px solid #d8b4fe; background: rgba(255,255,255,0.5);
+  font-size: 13px; font-weight: 600; color: #555; cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.category-pill:hover { background: rgba(255,255,255,0.85); color: #6b21a8; }
+.category-pill.active {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: #fff; border-color: transparent;
+  box-shadow: 0 4px 12px rgba(168,85,247,0.3);
+}
+
+/* Star rating buttons (in detail page) */
+.star-rating {
+  display: inline-flex; flex-direction: row-reverse; gap: 4px;
+  font-size: 28px; line-height: 1;
+}
+.star-rating input { position: absolute; opacity: 0; pointer-events: none; }
+.star-rating label {
+  cursor: pointer; color: #d1d5db; transition: color 0.15s, transform 0.1s;
+  user-select: none; padding: 0 2px;
+}
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label { color: #f59e0b; }
+.star-rating label:hover { transform: scale(1.15); }
+
+/* Rec gen badge */
+.rank-badge {
+  position: absolute; top: 8px; left: 8px;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: #fff; font-weight: 800; font-size: 11px;
+  padding: 4px 10px; border-radius: 999px;
+  z-index: 2; direction: ltr;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Pills for category/score on cards */
+.pill {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 999px;
+  margin-inline-end: 4px; white-space: nowrap;
+}
+.pill-cat   { background: #f3e5f5; color: #6b21a8; }
+.pill-score { background: #fef3c7; color: #92400e; }
+
+/* Quantity input */
+.qty-input {
+  width: 70px; padding: 6px 10px; border-radius: 8px;
+  border: 1px solid #d1d5db; background: rgba(255,255,255,0.7);
+  font-family: inherit; font-size: 13px;
+}
+
+/* Product card hover lift */
+.product-card { transition: transform 0.2s, box-shadow 0.2s; }
+.product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(168,85,247,0.15); }
+
+/* Helper: bg gradient brand */
+.btn-brand {
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  color: #fff; padding: 10px 22px; border-radius: 999px;
+  font-weight: 700; transition: transform 0.15s, box-shadow 0.15s;
+  display: inline-block;
+}
+.btn-brand:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(168,85,247,0.3); color: #fff; }
+.btn-brand:disabled { opacity: 0.5; cursor: not-allowed; }

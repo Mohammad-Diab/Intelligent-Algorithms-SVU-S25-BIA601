@@ -1,46 +1,68 @@
 {% extends "base.html" %}
 {% block title %}العربة{% endblock %}
 {% block content %}
-<h1>عربة التسوق</h1>
+
+<nav class="text-sm text-gray-500 mb-4 flex items-center gap-2">
+  <a href="{{ url_for('home') }}" class="hover:text-purple-600">الرئيسية</a>
+  <i class="fas fa-chevron-left text-[10px]"></i>
+  <span class="text-gray-800 font-medium">العربة</span>
+</nav>
+
+<h1 class="text-3xl font-bold text-gray-800 mb-6">عربة التسوق</h1>
 
 {% if items %}
-<table class="cart-table">
-  <thead>
-    <tr>
-      <th></th><th>المنتج</th><th>السعر</th><th>الكمية</th><th>المجموع</th><th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for r in items %}
-      <tr>
-        <td><img src="{{ r['image_url'] }}" alt="" class="thumb"></td>
-        <td><a href="{{ url_for('products.detail', product_id=r['product_id']) }}">{{ r['name'] }}</a></td>
-        <td>{{ '%.2f'|format(r['price']) }} ل.س</td>
-        <td>
-          <form method="post" action="{{ url_for('cart.update', product_id=r['product_id']) }}" class="qty-form">
-            <input type="number" name="qty" value="{{ r['qty'] }}" min="0" max="{{ r['stock'] }}">
-            <button type="submit">تحديث</button>
+<div class="glass-card overflow-hidden mb-6" data-aos="fade-up">
+  <table class="w-full text-sm">
+    <thead class="bg-white/30">
+      <tr class="text-gray-600">
+        <th class="p-4 text-start font-semibold w-20"></th>
+        <th class="p-4 text-start font-semibold">المنتج</th>
+        <th class="p-4 text-start font-semibold">السعر</th>
+        <th class="p-4 text-start font-semibold">الكمية</th>
+        <th class="p-4 text-start font-semibold">المجموع</th>
+        <th class="p-4 text-start font-semibold w-16"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in items %}
+      <tr class="border-t border-white/40">
+        <td class="p-3"><img src="{{ r['image_url'] }}" alt="" class="w-16 h-16 object-cover rounded-lg"></td>
+        <td class="p-3"><a href="{{ url_for('products.detail', product_id=r['product_id']) }}" class="font-semibold text-gray-800 hover:text-purple-600">{{ r['name'] }}</a></td>
+        <td class="p-3 text-gray-700">{{ '%.2f'|format(r['price']) }} ل.س</td>
+        <td class="p-3">
+          <form method="post" action="{{ url_for('cart.update', product_id=r['product_id']) }}" class="flex gap-1 items-center">
+            <input type="number" name="qty" value="{{ r['qty'] }}" min="0" max="{{ r['stock'] }}" class="qty-input">
+            <button type="submit" class="text-purple-600 hover:text-purple-800 text-xs font-semibold"><i class="fas fa-sync"></i></button>
           </form>
         </td>
-        <td>{{ '%.2f'|format(r['line_total']) }} ل.س</td>
-        <td>
+        <td class="p-3 font-bold text-gray-900">{{ '%.2f'|format(r['line_total']) }} ل.س</td>
+        <td class="p-3">
           <form method="post" action="{{ url_for('cart.remove', product_id=r['product_id']) }}">
-            <button type="submit" class="link-btn">حذف</button>
+            <button type="submit" class="text-pink-500 hover:text-pink-700 text-sm font-semibold"><i class="fas fa-trash"></i></button>
           </form>
         </td>
       </tr>
-    {% endfor %}
-  </tbody>
-  <tfoot>
-    <tr><td colspan="4" class="ar">الإجمالي:</td><td><strong>{{ '%.2f'|format(total) }} ل.س</strong></td><td></td></tr>
-  </tfoot>
-</table>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr class="bg-white/30 font-bold text-lg">
+        <td colspan="4" class="p-4 text-end text-gray-700">الإجمالي:</td>
+        <td colspan="2" class="p-4 text-gradient">{{ '%.2f'|format(total) }} ل.س</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
 
-<form method="post" action="{{ url_for('cart.checkout') }}" class="checkout-form">
-  <button type="submit" class="btn-primary">ادفع {{ '%.2f'|format(total) }} ل.س</button>
+<form method="post" action="{{ url_for('cart.checkout') }}" class="text-center md:text-end">
+  <button type="submit" class="btn-brand text-base px-10 py-4"><i class="fas fa-credit-card"></i> ادفع {{ '%.2f'|format(total) }} ل.س</button>
 </form>
 
 {% else %}
-<p class="muted">عربتك فارغة. <a href="{{ url_for('products.list_products') }}">تصفّح المنتجات</a>.</p>
+<div class="glass-card p-12 text-center" data-aos="fade-up">
+  <i class="fas fa-shopping-cart text-5xl text-gray-300 mb-4"></i>
+  <p class="text-gray-500 mb-4">عربتك فارغة</p>
+  <a href="{{ url_for('products.list_products') }}" class="btn-brand">تصفّح المنتجات</a>
+</div>
 {% endif %}
+
 {% endblock %}

@@ -2,43 +2,57 @@
 {% block title %}النموذج التجريبي · الخوارزمية الجينية{% endblock %}
 {% block extra_css %}
   <link rel="stylesheet" href="{{ url_for('static', filename='sandbox/style.css') }}">
+  <style>
+    body { background: linear-gradient(135deg, #e0f7fa 0%, #f3e5f5 50%, #fce4ec 100%) !important; color: #333 !important; }
+    .control-panel, .advanced { background: rgba(255,255,255,0.5) !important; border-color: rgba(255,255,255,0.8) !important; backdrop-filter: blur(12px); }
+    .control-panel label, .advanced summary, .advanced-grid .label-text { color: #374151 !important; }
+    select, input[type="number"] { background: rgba(255,255,255,0.7) !important; color: #1f2937 !important; border-color: #d1d5db !important; }
+    button#recommend-btn, button#reset-btn { background: linear-gradient(135deg,#a855f7,#ec4899) !important; color: #fff !important; }
+    .algo-card { background: rgba(255,255,255,0.55) !important; backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.8) !important; color: #1f2937 !important; }
+    .algo-card .name { color: #1f2937 !important; }
+    .algo-card .category { color: #6b21a8 !important; background: rgba(243,229,245,0.6) !important; }
+    .algo-card .price { color: #111827 !important; }
+    .algo-card .score-value { color: #15803d !important; }
+    .status, .user-info { color: #1f2937; }
+  </style>
 {% endblock %}
 
 {% block content %}
-<section class="hero">
-  <h1>النموذج التجريبي للخوارزمية الجينية</h1>
-  <p>تشغيل الخوارزمية الجينية وحدها (بدون شجرة القرار) على نفس بيانات المتجر.</p>
+<section class="glass-card p-6 md:p-10 mb-8" data-aos="fade-up">
+  <span class="inline-block py-1 px-3 rounded-full bg-purple-100 text-purple-600 text-xs font-bold mb-3 tracking-wider">GA-ONLY · NO DT</span>
+  <h1 class="text-3xl font-bold text-gray-800 mb-2">النموذج التجريبي للخوارزمية الجينية</h1>
+  <p class="text-gray-600">تشغيل الخوارزمية الجينية وحدها (بدون شجرة القرار) على نفس بيانات المتجر، مع إمكانية تعديل المعاملات.</p>
 </section>
 
-<section class="control-panel">
-  <label for="user-select">اختر مستخدماً:</label>
-  <select id="user-select"><option value="">— اختر —</option></select>
+<section class="control-panel" style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding:1.25rem;border-radius:16px;margin-bottom:1.25rem">
+  <label for="user-select" style="font-weight:600">اختر مستخدماً:</label>
+  <select id="user-select" style="flex:1;min-width:220px;padding:0.6rem 0.85rem;border-radius:10px"><option value="">— اختر —</option></select>
 </section>
 
-<details class="advanced">
-  <summary>إعدادات الخوارزمية المتقدمة</summary>
-  <div class="advanced-grid">
+<details class="advanced" style="border-radius:16px;padding:0.75rem 1.25rem;margin-bottom:1.25rem">
+  <summary style="cursor:pointer;font-weight:600;padding:0.4rem 0">إعدادات الخوارزمية المتقدمة</summary>
+  <div class="advanced-grid" style="display:grid;grid-template-columns:repeat(3,1fr) auto;gap:1.25rem;align-items:start;margin-top:1rem">
     <label>
-      <span class="label-text">عدد الأجيال</span>
-      <input id="gen-input" type="number" min="10" max="500" step="10" value="120" required>
-      <small>10 – 500 · كم جيلاً تتطور الخوارزمية</small>
+      <span class="label-text" style="font-weight:600;display:block;margin-bottom:0.4rem">عدد الأجيال</span>
+      <input id="gen-input" type="number" min="10" max="500" step="10" value="120" required style="width:100%;padding:0.6rem 0.85rem;border-radius:10px">
+      <small style="color:#6b7280;display:block;margin-top:0.3rem">10 – 500</small>
     </label>
     <label>
-      <span class="label-text">حجم المجتمع</span>
-      <input id="pop-input" type="number" min="20" max="300" step="10" value="80" required>
-      <small>20 – 300 · عدد الحلول المرشحة في كل جيل</small>
+      <span class="label-text" style="font-weight:600;display:block;margin-bottom:0.4rem">حجم المجتمع</span>
+      <input id="pop-input" type="number" min="20" max="300" step="10" value="80" required style="width:100%;padding:0.6rem 0.85rem;border-radius:10px">
+      <small style="color:#6b7280;display:block;margin-top:0.3rem">20 – 300</small>
     </label>
     <label>
-      <span class="label-text">معدل الطفرة</span>
-      <input id="mut-input" type="number" min="0" max="0.5" step="0.01" value="0.05" required>
-      <small>0 – 0.5 · احتمال تغيير عشوائي بسيط</small>
+      <span class="label-text" style="font-weight:600;display:block;margin-bottom:0.4rem">معدل الطفرة</span>
+      <input id="mut-input" type="number" min="0" max="0.5" step="0.01" value="0.05" required style="width:100%;padding:0.6rem 0.85rem;border-radius:10px">
+      <small style="color:#6b7280;display:block;margin-top:0.3rem">0 – 0.5</small>
     </label>
-    <button id="reset-btn" type="button" class="icon-btn" title="استعادة القيم الافتراضية" aria-label="استعادة القيم الافتراضية">↺</button>
+    <button id="reset-btn" type="button" title="استعادة القيم الافتراضية" aria-label="استعادة" style="padding:0.6rem 0.85rem;border-radius:10px;align-self:end">↺</button>
   </div>
 </details>
 
-<section class="action-row">
-  <button id="recommend-btn" disabled>اعرض التوصيات</button>
+<section class="action-row" style="margin-bottom:1.5rem">
+  <button id="recommend-btn" disabled style="padding:0.85rem 2rem;border-radius:999px;font-weight:700">اعرض التوصيات</button>
 </section>
 
 <section id="status" class="status hidden"></section>

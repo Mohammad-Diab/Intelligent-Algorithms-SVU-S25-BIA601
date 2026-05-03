@@ -1,50 +1,87 @@
 {% extends "base.html" %}
 {% block title %}المنتجات{% endblock %}
 {% block content %}
-<section class="products-header">
-  <h1>المنتجات</h1>
-  <form method="get" class="filters">
-    <input name="q" value="{{ q }}" placeholder="ابحث عن منتج...">
-    <select name="category">
-      <option value="">كل الفئات</option>
-      {% for c in categories %}
-        <option value="{{ c }}" {% if c == category %}selected{% endif %}>{{ c }}</option>
-      {% endfor %}
-    </select>
-    <button type="submit">تصفية</button>
-    {% if q or category %}<a href="{{ url_for('products.list_products') }}" class="muted">مسح</a>{% endif %}
-  </form>
-  <p class="muted">{{ total }} منتج</p>
-</section>
 
-{% if products %}
-<div class="grid">
-  {% for p in products %}
-    <a class="card" href="{{ url_for('products.detail', product_id=p['product_id']) }}">
-      <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy"
-           onerror="this.onerror=null;this.src='https://placehold.co/400x300/1a2028/5eb3f7?text=%23{{ p['product_id'] }}+{{ p['category']|urlencode }}';">
-      <div class="card-body">
-        <div class="card-title">{{ p['name'] }}</div>
-        <div class="card-meta">{{ p['category'] }}</div>
-        <div class="card-price">{{ '%.2f'|format(p['price']) }} ل.س</div>
-      </div>
-    </a>
+<nav class="text-sm text-gray-500 mb-4 flex items-center gap-2">
+  <a href="{{ url_for('home') }}" class="hover:text-purple-600">الرئيسية</a>
+  <i class="fas fa-chevron-left text-[10px]"></i>
+  <span class="text-gray-800 font-medium">المنتجات</span>
+</nav>
+
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4" data-aos="fade-in">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-800">المنتجات</h1>
+    <p class="text-gray-500 mt-1 text-sm">{{ total }} منتج</p>
+  </div>
+</div>
+
+<!-- Category Pills -->
+<div class="flex gap-2 overflow-x-auto pb-2 mb-6" data-aos="fade-right">
+  <a href="{{ url_for('products.list_products', q=q) }}" class="category-pill {{ 'active' if not category else '' }}">الكل</a>
+  {% for c in categories %}
+    <a href="{{ url_for('products.list_products', q=q, category=c) }}" class="category-pill {{ 'active' if c == category else '' }}">{{ c }}</a>
   {% endfor %}
 </div>
 
-{% if pages > 1 %}
-<nav class="pager">
-  {% if page > 1 %}
-    <a href="{{ url_for('products.list_products', q=q, category=category, page=page-1) }}">&rarr; السابق</a>
-  {% endif %}
-  <span class="muted">صفحة {{ page }} / {{ pages }}</span>
-  {% if page < pages %}
-    <a href="{{ url_for('products.list_products', q=q, category=category, page=page+1) }}">التالي &larr;</a>
-  {% endif %}
-</nav>
-{% endif %}
+<div class="flex flex-col md:flex-row gap-6">
 
-{% else %}
-  <p class="muted">لا توجد منتجات مطابقة.</p>
-{% endif %}
+  <!-- Filters Sidebar -->
+  <aside class="w-full md:w-60 flex-shrink-0" data-aos="fade-right">
+    <div class="glass-card p-5 sticky top-24">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-gray-800">تصفية</h3>
+        {% if q or category %}
+          <a href="{{ url_for('products.list_products') }}" class="text-xs text-purple-600 hover:text-purple-800 font-semibold">مسح</a>
+        {% endif %}
+      </div>
+      <form method="get" class="space-y-4">
+        <input type="hidden" name="category" value="{{ category }}">
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-2">البحث</label>
+          <input type="text" name="q" value="{{ q }}" placeholder="ابحث..."
+                 class="w-full bg-white/60 border border-white/80 rounded-xl py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+        </div>
+        <button type="submit" class="btn-brand w-full text-center">تطبيق</button>
+      </form>
+    </div>
+  </aside>
+
+  <!-- Product grid -->
+  <div class="flex-1">
+    {% if products %}
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" data-aos="fade-up">
+      {% for p in products %}
+        <a href="{{ url_for('products.detail', product_id=p['product_id']) }}" class="glass-card product-card p-3 group">
+          <div class="relative rounded-2xl overflow-hidden mb-3 aspect-[4/3] bg-white/40">
+            <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy"
+                 class="w-full h-full object-cover transition duration-500 group-hover:scale-110"
+                 onerror="this.onerror=null;this.src='https://placehold.co/400x300/f3e5f5/6b21a8?text=%23{{ p['product_id'] }}';">
+          </div>
+          <h3 class="font-bold text-gray-800 text-sm line-clamp-2 mb-1">{{ p['name'] }}</h3>
+          <div class="flex items-center gap-1 mb-2">
+            <span class="pill pill-cat">{{ p['category'] }}</span>
+          </div>
+          <div class="font-bold text-gray-900 text-sm">{{ '%.2f'|format(p['price']) }} ل.س</div>
+        </a>
+      {% endfor %}
+    </div>
+
+    {% if pages > 1 %}
+    <nav class="flex justify-center items-center gap-3 mt-8">
+      {% if page > 1 %}
+        <a href="{{ url_for('products.list_products', q=q, category=category, page=page-1) }}" class="glass-button px-4 py-2 text-sm text-gray-700"><i class="fas fa-chevron-right"></i> السابق</a>
+      {% endif %}
+      <span class="text-sm text-gray-600">صفحة {{ page }} / {{ pages }}</span>
+      {% if page < pages %}
+        <a href="{{ url_for('products.list_products', q=q, category=category, page=page+1) }}" class="glass-button px-4 py-2 text-sm text-gray-700">التالي <i class="fas fa-chevron-left"></i></a>
+      {% endif %}
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <p class="text-gray-500 text-center py-12">لا توجد منتجات مطابقة.</p>
+    {% endif %}
+  </div>
+</div>
+
 {% endblock %}

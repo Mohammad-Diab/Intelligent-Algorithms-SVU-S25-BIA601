@@ -1,76 +1,89 @@
 {% extends "base.html" %}
 {% block content %}
 
-<header class="cover">
-  <div class="cover-top">
-    <div class="cover-meta">
-      <div class="cover-uni-name">الجامعة الافتراضية السورية</div>
-      <div class="cover-faculty">كلية الهندسة المعلوماتية</div>
-      <div class="cover-semester">الفصل S25</div>
-      <div class="cover-course">الخوارزميات الذكية &nbsp;·&nbsp; BIA601</div>
-    </div>
-    <img class="cover-logo" src="{{ url_for('static', filename='img/svu-logo.webp') }}" alt="SVU Logo">
-  </div>
-
-  <div class="cover-center">
-    <h1 class="cover-topic">متجر لاختبار نظام توصية المنتجات بالخوارزميات الجينية</h1>
-    <div class="cover-teacher-inline">
-      <span class="cover-role-label">إشراف</span>
-      <span class="cover-name">د. عصام محمد سلمان</span>
+{% if not g.user %}
+<!-- SVU cover (only shown when logged out, as a landing) -->
+<section class="glass-card max-w-5xl mx-auto p-6 md:p-10 mb-8" data-aos="fade-up">
+  <div class="flex flex-col md:flex-row gap-6 items-start mb-6">
+    <img class="w-28 h-auto" src="{{ url_for('static', filename='img/svu-logo.webp') }}" alt="SVU Logo">
+    <div class="flex-1">
+      <div class="text-xl font-bold text-gray-800">الجامعة الافتراضية السورية</div>
+      <div class="text-gray-500">كلية الهندسة المعلوماتية</div>
+      <div class="mt-1 text-sm text-purple-600 font-semibold">الفصل S25 · الخوارزميات الذكية BIA601</div>
     </div>
   </div>
-
-  <div class="cover-bottom">
-    <span class="cover-role-label">إعداد</span>
-    <div class="cover-student-list">
-      <div class="student-row"><span class="s-name">محمد دياب</span><span class="s-sep">·</span><span class="s-id">mohammad_173125</span><span class="s-sep">·</span><span class="s-cls">C2</span></div>
-      <div class="student-row"><span class="s-name">سامي الخوجة</span><span class="s-sep">·</span><span class="s-id">sami_xxxxxx</span><span class="s-sep">·</span><span class="s-cls">C?</span></div>
-      <div class="student-row"><span class="s-name">حيدرة دلالة</span><span class="s-sep">·</span><span class="s-id">Haidra_155085</span><span class="s-sep">·</span><span class="s-cls">C2</span></div>
-      <div class="student-row"><span class="s-name">اسم الطالب 4</span><span class="s-sep">·</span><span class="s-id">name_xxxxxx</span><span class="s-sep">·</span><span class="s-cls">C?</span></div>
-      <div class="student-row"><span class="s-name">اسم الطالب 5</span><span class="s-sep">·</span><span class="s-id">name_xxxxxx</span><span class="s-sep">·</span><span class="s-cls">C?</span></div>
-    </div>
+  <h1 class="text-2xl md:text-4xl font-bold text-gray-800 mb-3 leading-tight">
+    متجر لاختبار <span class="text-gradient">نظام توصية المنتجات</span> بالخوارزميات الجينية
+  </h1>
+  <div class="inline-flex items-center gap-2 bg-white/60 border border-white/80 rounded-lg px-3 py-1 mb-5 text-sm">
+    <span class="text-gray-500 text-xs">إشراف</span>
+    <span class="font-semibold text-gray-800">د. عصام محمد سلمان</span>
   </div>
-</header>
+  <div class="flex flex-wrap gap-2 mb-6">
+    <span class="bg-white/60 border border-white/80 rounded-full px-3 py-1 text-xs font-semibold text-gray-700"><span class="text-purple-600">محمد دياب</span> · mohammad_173125 · C2</span>
+    <span class="bg-white/60 border border-white/80 rounded-full px-3 py-1 text-xs font-semibold text-gray-700"><span class="text-purple-600">سامي الخوجة</span> · sami_xxxxxx · C?</span>
+    <span class="bg-white/60 border border-white/80 rounded-full px-3 py-1 text-xs font-semibold text-gray-700"><span class="text-purple-600">حيدرة دلالة</span> · Haidra_155085 · C2</span>
+    <span class="bg-white/60 border border-white/80 rounded-full px-3 py-1 text-xs font-semibold text-gray-700">اسم الطالب 4</span>
+    <span class="bg-white/60 border border-white/80 rounded-full px-3 py-1 text-xs font-semibold text-gray-700">اسم الطالب 5</span>
+  </div>
+  <a href="{{ url_for('auth.login') }}" class="btn-brand text-base px-8 py-3">سجّل الدخول لرؤية توصياتك</a>
+</section>
+{% endif %}
 
+<!-- Hero (logged-in greeting) -->
 {% if g.user %}
-  <p class="muted" style="margin-bottom: 0.75rem;">أهلاً، <strong>{{ g.user['full_name'] }}</strong> — التوصيات أدناه تُحدَّث تلقائياً مع كل تفاعل.</p>
-{% else %}
-  <div class="home-cta">
-    <a href="{{ url_for('auth.login') }}" class="btn-primary btn-xl">سجّل الدخول لرؤية توصياتك</a>
+<section class="glass-card p-6 md:p-10 mb-8 relative overflow-hidden" data-aos="fade-up">
+  <div class="absolute top-0 left-0 w-64 h-64 bg-pink-300 rounded-full blur-3xl opacity-30 -translate-y-1/2 -translate-x-1/3"></div>
+  <div class="absolute bottom-0 right-0 w-48 h-48 bg-purple-300 rounded-full blur-3xl opacity-30 translate-y-1/3 translate-x-1/4"></div>
+  <div class="relative">
+    <span class="inline-block py-1 px-3 rounded-full bg-purple-100 text-purple-600 text-xs font-bold mb-3 tracking-wider">DT + GA HYBRID</span>
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3 leading-tight">
+      أهلاً <span class="text-gradient">{{ g.user['full_name'] }}</span>
+    </h1>
+    <p class="text-gray-600 max-w-xl">
+      التوصيات أدناه تُحدَّث تلقائياً مع كل تفاعل (مشاهدة · نقر · إضافة للعربة · شراء · تقييم). الكاش لمدة 30 ثانية.
+    </p>
   </div>
+</section>
 {% endif %}
 
 {% if recs %}
-<section class="recs">
-  <div class="recs-header">
-    <h2>موصى لك</h2>
-    {% if recs['preferred_category'] %}
-      <span class="recs-meta">
-        تنبؤ شجرة القرار: <strong>{{ recs['preferred_category'] }}</strong>
-        · لياقة الخوارزمية الجينية: <strong>{{ '%.2f'|format(recs['fitness']) }}</strong>
-      </span>
-    {% endif %}
+<section data-aos="fade-up" data-aos-delay="100">
+  <div class="flex justify-between items-end mb-6 flex-wrap gap-3">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+        <i class="fas fa-magic text-purple-500"></i> موصى لك
+      </h2>
+      <p class="text-sm text-gray-500 mt-1">
+        {% if recs['preferred_category'] %}
+          تنبؤ شجرة القرار: <strong class="text-purple-600">{{ recs['preferred_category'] }}</strong>
+          · لياقة الخوارزمية الجينية: <strong class="text-purple-600">{{ '%.2f'|format(recs['fitness']) }}</strong>
+        {% endif %}
+      </p>
+    </div>
   </div>
-  <div class="grid">
+
+  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
     {% for p in recs['products'] %}
-      <a class="card rec-card" href="{{ url_for('products.detail', product_id=p['product_id']) }}">
-        <span class="rank-badge" title="ترتيب الجين في الكروموسوم">Gen {{ p['rank'] }}</span>
-        <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy"
-             onerror="this.onerror=null;this.src='https://placehold.co/400x300/1a2028/5eb3f7?text=%23{{ p['product_id'] }}+{{ p['category']|urlencode }}';">
-        <div class="card-body">
-          <div class="card-title">{{ p['name'] }}</div>
-          <div class="card-meta">
-            <span class="pill pill-cat">{{ p['category'] }}</span>
-            <span class="pill pill-score">درجة {{ '%.2f'|format(p['score']) }}</span>
-          </div>
-          <div class="card-price">{{ '%.2f'|format(p['price']) }} ل.س</div>
+      <a href="{{ url_for('products.detail', product_id=p['product_id']) }}" class="glass-card product-card p-3 group relative">
+        <span class="rank-badge">Gen {{ p['rank'] }}</span>
+        <div class="relative rounded-2xl overflow-hidden mb-3 aspect-[4/3] bg-white/40">
+          <img src="{{ p['image_url'] }}" alt="{{ p['name'] }}" loading="lazy"
+               class="w-full h-full object-cover transition duration-500 group-hover:scale-110"
+               onerror="this.onerror=null;this.src='https://placehold.co/400x300/f3e5f5/6b21a8?text=%23{{ p['product_id'] }}+{{ p['category']|urlencode }}';">
         </div>
+        <h3 class="font-bold text-gray-800 text-sm line-clamp-2 mb-1">{{ p['name'] }}</h3>
+        <div class="flex items-center gap-1 mb-2 flex-wrap">
+          <span class="pill pill-cat">{{ p['category'] }}</span>
+          <span class="pill pill-score">{{ '%.2f'|format(p['score']) }}</span>
+        </div>
+        <div class="font-bold text-gray-900 text-sm">{{ '%.2f'|format(p['price']) }} ل.س</div>
       </a>
     {% endfor %}
   </div>
 </section>
 {% elif g.user %}
-<p class="muted">تصفّح وقيّم بعض المنتجات — ستظهر توصياتك المخصصة هنا.</p>
+<p class="text-gray-500 text-center py-12">تصفّح وقيّم بعض المنتجات — ستظهر توصياتك المخصصة هنا.</p>
 {% endif %}
 
 {% endblock %}

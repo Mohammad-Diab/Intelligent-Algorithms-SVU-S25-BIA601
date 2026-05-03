@@ -1,17 +1,34 @@
 {% extends "base.html" %}
 {% block title %}تسجيل الدخول{% endblock %}
 {% block content %}
-<section class="auth-card">
-  <h1>تسجيل الدخول</h1>
-  <form method="post" class="form">
-    <label>اسم المستخدم
-      <input name="identifier" required autofocus>
-    </label>
-    <label>كلمة المرور
-      <input name="password" type="password" required>
-    </label>
-    <button type="submit">دخول</button>
-  </form>
-  <p class="muted">حسابات للتجربة: <code>user1</code> ... <code>user1000</code> · كلمة المرور = اسم المستخدم نفسه (مثلاً <code>user1</code> / <code>user1</code>)</p>
-</section>
+
+<div class="max-w-md mx-auto mt-12" data-aos="fade-up">
+  <div class="glass-card p-8 md:p-10">
+    <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-2xl mb-4">
+      <i class="fas fa-user-lock"></i>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-800 mb-1 text-center">تسجيل الدخول</h1>
+    <p class="text-gray-500 text-sm text-center mb-6">للوصول إلى توصياتك المخصصة</p>
+
+    <form method="post" class="space-y-4">
+      <label class="block">
+        <span class="text-sm font-semibold text-gray-700">اسم المستخدم</span>
+        <input name="identifier" required autofocus
+               class="w-full mt-1 bg-white/60 border border-white/80 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+      </label>
+      <label class="block">
+        <span class="text-sm font-semibold text-gray-700">كلمة المرور</span>
+        <input name="password" type="password" required
+               class="w-full mt-1 bg-white/60 border border-white/80 rounded-xl py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+      </label>
+      <button type="submit" class="btn-brand w-full text-center py-3">دخول</button>
+    </form>
+
+    <div class="mt-6 p-3 bg-white/30 border border-white/60 rounded-xl text-xs text-gray-600 leading-relaxed">
+      <strong class="text-purple-600">للتجربة:</strong> استخدم <code class="bg-white/70 px-1.5 py-0.5 rounded">user1</code> ... <code class="bg-white/70 px-1.5 py-0.5 rounded">user1000</code>،<br>
+      كلمة المرور = اسم المستخدم نفسه (مثل <code class="bg-white/70 px-1.5 py-0.5 rounded">user42</code> / <code class="bg-white/70 px-1.5 py-0.5 rounded">user42</code>).
+    </div>
+  </div>
+</div>
+
 {% endblock %}

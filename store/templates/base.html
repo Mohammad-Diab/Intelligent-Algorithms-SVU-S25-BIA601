@@ -5,43 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}متجر لاختبار نظام توصية المنتجات بالخوارزميات الجينية{% endblock %}</title>
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{'soft-cyan':'#e0f7fa','light-pink':'#fce4ec','cream':'#fffdd0','light-purple':'#f3e5f5'}}}}</script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='custom.css') }}">
   {% block extra_css %}{% endblock %}
 </head>
-<body>
-  <header class="topbar">
-    <a href="{{ url_for('home') }}" class="brand">متجر لاختبار نظام توصية المنتجات بالخوارزميات الجينية</a>
-    {% set ep = request.endpoint or '' %}
-    <nav>
-      <a href="{{ url_for('home') }}" class="{{ 'active' if ep == 'home' else '' }}">الرئيسية</a>
+<body class="antialiased min-h-screen">
+
+  {% set ep = request.endpoint or '' %}
+
+  <!-- Sidebar (desktop only) -->
+  {% if g.user %}
+  <aside class="hidden lg:flex flex-col fixed top-0 right-0 h-screen w-64 glass z-30 p-6 overflow-y-auto">
+    <a href="{{ url_for('home') }}" class="flex items-center gap-2 mb-8">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">B</div>
+      <span class="font-bold text-gray-800 text-sm">BIA601</span>
+    </a>
+    <nav class="flex flex-col gap-1 text-sm">
+      <a href="{{ url_for('home') }}" class="side-link {{ 'active' if ep == 'home' else '' }}"><i class="fas fa-home w-5 text-center"></i> الرئيسية</a>
+      <a href="{{ url_for('products.list_products') }}" class="side-link {{ 'active' if ep.startswith('products.') else '' }}"><i class="fas fa-box w-5 text-center"></i> المنتجات</a>
+      <a href="{{ url_for('cart.view_cart') }}" class="side-link {{ 'active' if ep.startswith('cart.') else '' }}"><i class="fas fa-shopping-cart w-5 text-center"></i> العربة</a>
+      <a href="{{ url_for('sandbox.index') }}" class="side-link {{ 'active' if ep.startswith('sandbox.') else '' }}"><i class="fas fa-flask w-5 text-center"></i> النموذج التجريبي</a>
+    </nav>
+    <div class="mt-auto pt-6 border-t border-white/40 text-xs">
+      <div class="text-gray-600 mb-2">مرحباً، <strong class="text-gray-800">{{ g.user['full_name'] }}</strong></div>
+      <a href="{{ url_for('auth.logout') }}" class="text-pink-600 hover:text-pink-800 font-semibold flex items-center gap-1"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+    </div>
+  </aside>
+  {% endif %}
+
+  <!-- Top bar (mobile + when logged out) -->
+  <header class="fixed top-0 left-0 right-0 z-20 glass px-6 py-3 flex items-center justify-between {% if g.user %}lg:right-64{% endif %}">
+    <a href="{{ url_for('home') }}" class="flex items-center gap-2">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white text-sm font-bold">B</div>
+      <span class="font-bold text-gray-800 text-sm hidden sm:inline">متجر التوصية الذكي</span>
+    </a>
+    <nav class="flex items-center gap-3 text-sm">
       {% if g.user %}
-        <a href="{{ url_for('products.list_products') }}" class="{{ 'active' if ep.startswith('products.') else '' }}">المنتجات</a>
-        <a href="{{ url_for('cart.view_cart') }}" class="{{ 'active' if ep.startswith('cart.') else '' }}">العربة</a>
-      {% endif %}
-      <a href="{{ url_for('sandbox.index') }}" class="{{ 'active' if ep.startswith('sandbox.') else '' }}" title="النموذج التجريبي للخوارزمية الجينية">النموذج التجريبي</a>
-      {% if g.user %}
-        <span class="greet">مرحباً، {{ g.user['full_name'] }}</span>
-        <a href="{{ url_for('auth.logout') }}">تسجيل الخروج</a>
+        <a href="{{ url_for('cart.view_cart') }}" class="lg:hidden text-gray-700 hover:text-purple-600"><i class="fas fa-shopping-cart"></i></a>
+        <a href="{{ url_for('auth.logout') }}" class="lg:hidden text-pink-600 font-semibold">خروج</a>
       {% else %}
-        <a href="{{ url_for('auth.login') }}">تسجيل الدخول</a>
+        <a href="{{ url_for('auth.login') }}" class="bg-gray-900 text-white px-5 py-2 rounded-full font-semibold hover:bg-gray-800 transition shadow-md text-xs">تسجيل الدخول</a>
       {% endif %}
     </nav>
   </header>
 
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-      <div class="flashes">
+      <div class="fixed top-16 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 space-y-2">
         {% for cat, msg in messages %}
-          <div class="flash flash-{{ cat }}">{{ msg }}</div>
+          <div class="flash-{{ cat }} glass-card px-4 py-3 text-sm font-semibold shadow-lg">
+            {{ msg }}
+          </div>
         {% endfor %}
       </div>
     {% endif %}
   {% endwith %}
 
-  <main>
+  <main class="{% if g.user %}lg:mr-64{% endif %} pt-20 px-4 md:px-8 pb-12">
     {% block content %}{% endblock %}
   </main>
 
-  <footer>SVU · S25 · BIA601 — الخوارزميات الذكية</footer>
+  <footer class="text-center py-6 text-xs text-gray-500 {% if g.user %}lg:mr-64{% endif %}">
+    SVU · S25 · BIA601 — الخوارزميات الذكية
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>AOS.init({duration:600, once:true, offset:30});</script>
+  {% block extra_js %}{% endblock %}
 </body>
 </html>

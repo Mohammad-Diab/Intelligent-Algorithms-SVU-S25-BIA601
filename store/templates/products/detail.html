@@ -1,74 +1,102 @@
 {% extends "base.html" %}
 {% block title %}{{ product['name'] }}{% endblock %}
 {% block content %}
-<section class="detail">
-  <img class="detail-img" src="{{ product['image_url'] }}" alt="{{ product['name'] }}"
-       onerror="this.onerror=null;this.src='https://placehold.co/600x400/1a2028/5eb3f7?text=%23{{ product['product_id'] }}+{{ product['category']|urlencode }}';">
-  <div class="detail-info">
-    <h1>{{ product['name'] }}</h1>
-    <div class="muted">{{ product['category'] }}</div>
-    <div class="detail-price">{{ '%.2f'|format(product['price']) }} ل.س</div>
-    <div class="muted">المتوفر في المخزون: {{ product['stock'] }}</div>
-    <div class="rating-summary">
+
+<nav class="text-sm text-gray-500 mb-4 flex items-center gap-2">
+  <a href="{{ url_for('home') }}" class="hover:text-purple-600">الرئيسية</a>
+  <i class="fas fa-chevron-left text-[10px]"></i>
+  <a href="{{ url_for('products.list_products') }}" class="hover:text-purple-600">المنتجات</a>
+  <i class="fas fa-chevron-left text-[10px]"></i>
+  <a href="{{ url_for('products.list_products', category=product['category']) }}" class="hover:text-purple-600">{{ product['category'] }}</a>
+</nav>
+
+<div class="grid md:grid-cols-2 gap-6 mb-8" data-aos="fade-up">
+  <div class="glass-card p-4">
+    <div class="rounded-2xl overflow-hidden aspect-square bg-white/40">
+      <img src="{{ product['image_url'] }}" alt="{{ product['name'] }}"
+           class="w-full h-full object-cover"
+           onerror="this.onerror=null;this.src='https://placehold.co/600x600/f3e5f5/6b21a8?text=%23{{ product['product_id'] }}';">
+    </div>
+  </div>
+
+  <div class="glass-card p-6 md:p-8 flex flex-col">
+    <span class="pill pill-cat self-start mb-3">{{ product['category'] }}</span>
+    <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2 leading-tight">{{ product['name'] }}</h1>
+
+    <div class="flex items-center gap-2 mb-4 text-sm">
       {% if avg_rating is not none %}
-        <span class="star">★</span> {{ '%.2f'|format(avg_rating) }} ({{ rating_count }} تقييم)
+        <span class="text-yellow-500"><i class="fas fa-star"></i></span>
+        <span class="font-semibold text-gray-800">{{ '%.2f'|format(avg_rating) }}</span>
+        <span class="text-gray-500">({{ rating_count }} تقييم)</span>
       {% else %}
-        <span class="muted">لا توجد تقييمات بعد</span>
+        <span class="text-gray-400">لا توجد تقييمات بعد</span>
       {% endif %}
     </div>
-    <p>{{ product['description'] }}</p>
+
+    <div class="text-3xl font-bold text-gradient mb-4">{{ '%.2f'|format(product['price']) }} ل.س</div>
+
+    <p class="text-gray-600 text-sm mb-4">{{ product['description'] }}</p>
+
+    <div class="text-sm text-gray-500 mb-6">
+      <i class="fas fa-box-open"></i> المتوفر في المخزون: <strong class="text-gray-800">{{ product['stock'] }}</strong>
+    </div>
+
     {% if product['stock'] > 0 %}
       {% if g.user %}
-        <form method="post" action="{{ url_for('cart.add', product_id=product['product_id']) }}" class="add-to-cart">
-          <input type="number" name="qty" value="1" min="1" max="{{ product['stock'] }}">
-          <button type="submit" class="btn-primary">أضف إلى العربة</button>
-        </form>
+      <form method="post" action="{{ url_for('cart.add', product_id=product['product_id']) }}" class="flex gap-2 items-center mt-auto">
+        <input type="number" name="qty" value="1" min="1" max="{{ product['stock'] }}" class="qty-input">
+        <button type="submit" class="btn-brand flex-1"><i class="fas fa-cart-plus"></i> أضف إلى العربة</button>
+      </form>
       {% else %}
-        <a href="{{ url_for('auth.login', next=request.path) }}" class="btn-primary">سجّل الدخول للشراء</a>
+      <a href="{{ url_for('auth.login', next=request.path) }}" class="btn-brand mt-auto text-center">سجّل الدخول للشراء</a>
       {% endif %}
     {% else %}
-      <button class="btn-primary" disabled>نفد المخزون</button>
+      <button class="btn-brand mt-auto" disabled>نفد المخزون</button>
     {% endif %}
   </div>
-</section>
+</div>
 
-<section class="reviews">
-  <h2>التقييمات والمراجعات</h2>
+<!-- Reviews -->
+<section class="glass-card p-6 md:p-8" data-aos="fade-up">
+  <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2"><i class="fas fa-comments text-purple-500"></i> التقييمات والمراجعات</h2>
 
   {% if g.user %}
-    <div class="review-forms">
-      <form method="post" action="{{ url_for('reviews.submit_rating', product_id=product['product_id']) }}" class="form-inline rating-form">
-        <span class="rating-label">تقييمك:</span>
-        <div class="star-rating" role="radiogroup" aria-label="تقييم بالنجوم">
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+      <form method="post" action="{{ url_for('reviews.submit_rating', product_id=product['product_id']) }}" class="bg-white/40 border border-white/70 rounded-xl p-4">
+        <div class="text-sm font-semibold text-gray-700 mb-2">تقييمك:</div>
+        <div class="star-rating mb-3" role="radiogroup">
           {% for n in [1,2,3,4,5] %}
-            <input type="radio" id="star{{ n }}" name="rating" value="{{ n }}"
-                   {% if user_rating == n %}checked{% endif %} required>
+            <input type="radio" id="star{{ n }}" name="rating" value="{{ n }}" {% if user_rating == n %}checked{% endif %} required>
             <label for="star{{ n }}" title="{{ n }} نجوم">★</label>
           {% endfor %}
         </div>
-        <button type="submit">{{ 'تحديث التقييم' if user_rating else 'إرسال التقييم' }}</button>
+        <button type="submit" class="btn-brand text-sm">{{ 'تحديث التقييم' if user_rating else 'إرسال التقييم' }}</button>
       </form>
 
-      <form method="post" action="{{ url_for('reviews.submit_review', product_id=product['product_id']) }}" class="form-inline">
-        <textarea name="comment" placeholder="اكتب مراجعتك..." required maxlength="1000" rows="3"></textarea>
-        <button type="submit">نشر المراجعة</button>
+      <form method="post" action="{{ url_for('reviews.submit_review', product_id=product['product_id']) }}" class="bg-white/40 border border-white/70 rounded-xl p-4">
+        <div class="text-sm font-semibold text-gray-700 mb-2">مراجعتك:</div>
+        <textarea name="comment" placeholder="اكتب مراجعتك..." required maxlength="1000" rows="3"
+                  class="w-full bg-white/70 border border-white/80 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300 mb-3"></textarea>
+        <button type="submit" class="btn-brand text-sm">نشر المراجعة</button>
       </form>
     </div>
-  {% else %}
-    <p class="muted"><a href="{{ url_for('auth.login', next=request.path) }}">سجّل الدخول</a> لتقييم أو مراجعة هذا المنتج.</p>
   {% endif %}
 
   {% if reviews %}
-    <ul class="review-list">
+    <ul class="space-y-3">
       {% for r in reviews %}
-        <li>
-          <div class="review-head"><strong>{{ r['author'] }}</strong> <span class="muted">{{ r['created_at'] }}</span></div>
-          <div>{{ r['comment'] }}</div>
+        <li class="bg-white/40 border border-white/70 rounded-xl p-4">
+          <div class="flex items-center justify-between mb-1 text-xs">
+            <strong class="text-purple-600">{{ r['author'] }}</strong>
+            <span class="text-gray-400">{{ r['created_at'] }}</span>
+          </div>
+          <div class="text-sm text-gray-700">{{ r['comment'] }}</div>
         </li>
       {% endfor %}
     </ul>
   {% else %}
-    <p class="muted">لا توجد مراجعات بعد.</p>
+    <p class="text-gray-500 text-sm">لا توجد مراجعات بعد.</p>
   {% endif %}
 </section>
+
 {% endblock %}
