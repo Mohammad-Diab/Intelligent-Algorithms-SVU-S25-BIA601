@@ -16,7 +16,18 @@
       {% endif %}
     </div>
     <p>{{ product['description'] }}</p>
-    <button class="btn-primary" disabled title="Cart coming soon">Add to cart</button>
+    {% if product['stock'] > 0 %}
+      {% if g.user %}
+        <form method="post" action="{{ url_for('cart.add', product_id=product['id']) }}" class="add-to-cart">
+          <input type="number" name="qty" value="1" min="1" max="{{ product['stock'] }}">
+          <button type="submit" class="btn-primary">Add to cart</button>
+        </form>
+      {% else %}
+        <a href="{{ url_for('auth.login', next=request.path) }}" class="btn-primary">Login to buy</a>
+      {% endif %}
+    {% else %}
+      <button class="btn-primary" disabled>Out of stock</button>
+    {% endif %}
   </div>
 </section>
 

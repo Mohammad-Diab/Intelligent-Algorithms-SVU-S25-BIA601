@@ -117,6 +117,15 @@ def init_app(app):
     app.teardown_appcontext(close_db)
 
 
+def log_event(user_id, product_id, event):
+    db = get_db()
+    db.execute(
+        "INSERT INTO behavior(user_id, product_id, event) VALUES (?,?,?)",
+        (user_id, product_id, event),
+    )
+    db.commit()
+
+
 if __name__ == "__main__":
     init_db()
     print(f"Initialized {DB_PATH}")

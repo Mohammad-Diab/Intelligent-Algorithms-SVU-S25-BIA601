@@ -60,3 +60,20 @@ main { max-width: 1100px; margin: 0 auto; padding: 24px; }
 .review-list li { background: #fff; padding: 12px 14px; margin-bottom: 8px; border: 1px solid #e5e5e5; border-radius: 6px; }
 .review-head { margin-bottom: 4px; font-size: 13px; }
 @media (max-width: 700px) { .detail { grid-template-columns: 1fr; } }
+
+.add-to-cart { display: flex; gap: 8px; align-items: center; }
+.add-to-cart input { width: 70px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+
+.cart-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; }
+.cart-table th, .cart-table td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; vertical-align: middle; }
+.cart-table tfoot td { border-bottom: 0; }
+.cart-table .ar { text-align: right; }
+.thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; }
+.qty-form { display: flex; gap: 4px; align-items: center; }
+.qty-form input { width: 70px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+.qty-form button { padding: 6px 10px; background: #555; color: #fff; border: 0; border-radius: 4px; cursor: pointer; font-size: 13px; }
+.link-btn { background: none; border: 0; color: #b00020; cursor: pointer; padding: 0; font-size: 14px; }
+.link-btn:hover { text-decoration: underline; }
+.checkout-form { margin-top: 16px; text-align: right; }
+.checkout-form .btn-primary { padding: 12px 24px; font-size: 16px; }
+.order-conf .cart-table { margin: 16px 0; }

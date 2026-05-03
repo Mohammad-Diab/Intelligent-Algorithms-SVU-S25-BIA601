@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, request, abort
+from flask import Blueprint, render_template, request, abort, g
 
-from db import get_db
+from db import get_db, log_event
 
 
 bp = Blueprint("products", __name__, url_prefix="/products")
@@ -51,6 +51,9 @@ def detail(product_id):
     if p is None:
         abort(404)
 
+    if g.user:
+        log_event(g.user["id"], product_id, "clicked")
+
     rating_row = db.execute(
         "SELECT AVG(rating) AS avg, COUNT(*) AS n FROM ratings WHERE product_id = ?",
         (product_id,)).fetchone()
@@ -64,7 +67,6 @@ def detail(product_id):
         (product_id,)).fetchall()
 
     user_rating = None
-    from flask import g
     if g.user:
         row = db.execute(
             "SELECT rating FROM ratings WHERE user_id = ? AND product_id = ?",

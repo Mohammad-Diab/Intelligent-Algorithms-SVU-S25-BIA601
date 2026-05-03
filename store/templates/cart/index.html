@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Cart{% endblock %}
+{% block content %}
+<h1>Your Cart</h1>
+
+{% if items %}
+<table class="cart-table">
+  <thead>
+    <tr>
+      <th></th><th>Product</th><th>Price</th><th>Qty</th><th>Total</th><th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in items %}
+      <tr>
+        <td><img src="{{ r['image_url'] }}" alt="" class="thumb"></td>
+        <td><a href="{{ url_for('products.detail', product_id=r['id']) }}">{{ r['name'] }}</a></td>
+        <td>${{ '%.2f'|format(r['price']) }}</td>
+        <td>
+          <form method="post" action="{{ url_for('cart.update', product_id=r['id']) }}" class="qty-form">
+            <input type="number" name="qty" value="{{ r['qty'] }}" min="0" max="{{ r['stock'] }}">
+            <button type="submit">Update</button>
+          </form>
+        </td>
+        <td>${{ '%.2f'|format(r['line_total']) }}</td>
+        <td>
+          <form method="post" action="{{ url_for('cart.remove', product_id=r['id']) }}">
+            <button type="submit" class="link-btn">Remove</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr><td colspan="4" class="ar">Total:</td><td><strong>${{ '%.2f'|format(total) }}</strong></td><td></td></tr>
+  </tfoot>
+</table>
+
+<form method="post" action="{{ url_for('cart.checkout') }}" class="checkout-form">
+  <button type="submit" class="btn-primary">Pay ${{ '%.2f'|format(total) }}</button>
+</form>
+
+{% else %}
+<p class="muted">Your cart is empty. <a href="{{ url_for('products.list_products') }}">Browse products</a>.</p>
+{% endif %}
+{% endblock %}

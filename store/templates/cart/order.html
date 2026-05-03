@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order['id'] }}{% endblock %}
+{% block content %}
+<section class="order-conf">
+  <h1>Thanks for your order!</h1>
+  <p class="muted">Order #{{ order['id'] }} · {{ order['created_at'] }}</p>
+
+  <table class="cart-table">
+    <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
+    <tbody>
+      {% for r in items %}
+        <tr>
+          <td>{{ r['name'] }}</td>
+          <td>{{ r['qty'] }}</td>
+          <td>${{ '%.2f'|format(r['price']) }}</td>
+          <td>${{ '%.2f'|format(r['line_total']) }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot><tr><td colspan="3" class="ar">Total:</td><td><strong>${{ '%.2f'|format(order['total']) }}</strong></td></tr></tfoot>
+  </table>
+
+  <a href="{{ url_for('products.list_products') }}" class="btn-primary">Continue shopping</a>
+</section>
+{% endblock %}
