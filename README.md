@@ -79,7 +79,7 @@ DOI: 10.31893/multiscience.2025003 · https://malque.pub/ojs/index.php/msj/artic
 
 - Haidra Dalalah
 - Fida Yousef
-- [Add remaining team members]
+- Elham Mal
 
 ## License
 
