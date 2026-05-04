@@ -9,7 +9,7 @@ bp = Blueprint("cart", __name__, url_prefix="/cart")
 
 def _cart_rows(user_id):
     return get_db().execute(
-        "SELECT p.product_id, p.name, p.image_url, p.price, p.stock, c.qty, "
+        "SELECT p.product_id, p.name, p.image_url, p.category, p.price, p.stock, c.qty, "
         "       (p.price * c.qty) AS line_total "
         "FROM cart_items c JOIN products p ON p.product_id = c.product_id "
         "WHERE c.user_id = ? ORDER BY p.name",

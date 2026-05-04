@@ -26,7 +26,8 @@
     <tbody>
       {% for r in items %}
       <tr class="border-t border-white/40">
-        <td class="p-3"><img src="{{ r['image_url'] }}" alt="" class="w-16 h-16 object-cover rounded-lg"></td>
+        <td class="p-3"><img src="{{ r['image_url'] }}" alt="" class="w-16 h-16 object-cover rounded-lg"
+               onerror="this.onerror=null;this.src='{{ r|product_fallback }}';"></td>
         <td class="p-3"><a href="{{ url_for('products.detail', product_id=r['product_id']) }}" class="font-semibold text-gray-800 hover:text-purple-600">{{ r['name'] }}</a></td>
         <td class="p-3 text-gray-700">{{ '%.2f'|format(r['price']) }} ل.س</td>
         <td class="p-3">
